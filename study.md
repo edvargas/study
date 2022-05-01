@@ -141,7 +141,7 @@ Exemplo: uma classe que possui varias validacoes em uma rotina, pode ser extraid
 
 - Dependency inversion principle -> Abstracoes nao devem depender de implementacoes, implementacoes devem depender de abstracoes. Exemplo: tendo classes implementadas de uma interface, as implementacoes dependem da interface(abstracao).
 
-- 
+- Interface Segregation Principle -> Uma classe não deveria ser forcada a depender de métodos que não utilizará. Exemplo: Uma interface que possui 3 metodos, dado as classes que implementam essa interface, caso uma delas nao necessite de todos os metodos, a mesma nao deve ser obrigada a implementar todos, entao uma forma para refatorar esse caso, e migrando esse metodo que nao é usado em todas as classes de implementacao, para outra interface, e essa mesma extender da interface raiz, assim tendo duas interfaces do mesmo tipo, mas com variacoes diferentes. 
 
 
 --------------------
