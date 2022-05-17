@@ -14,6 +14,8 @@
 # TypeScript
 - TS é uma linguagem compilada, com todos as features do JS, outra vantagem, é o VS code mostrar o que há de errado em tempo de desenvolvimento, ao contrário do JS, que o erro é apenas apresentado em tempo de execucao.
 - Como o navegador só entende JS, é necessario ter um arquivo chamado "tsconfig.json" no projeto para transpilar o codigo TS para JS, geralmente em um projeto web, o codigo TS fica em uma pasta chamada "app" e é configurado um compiler para transpilar o código JS para uma pasta chamada "dist". No compilador criado no "package.json", é necessário setar o valor "tsc", que o módulo type script compiler dentro da dependencia do TS no projeto.
+- pop() -> remove último elemento do array
+- ReadOnlyArray -> exatamente igual ao array, porém, read only
 
 
 -------------------
