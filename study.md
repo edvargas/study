@@ -21,6 +21,13 @@
 -------------------
 
 
+# HTML
+- element.innerHTML -> dado que a propriedade 'element' seja um elemento html, todo valor recebido no innerHTML será renderizado pelo DOM.
+
+
+-------------------
+
+
 # Kubernets
 
 ## POD -> 
@@ -125,8 +132,13 @@
 - go run ~classe main~ -> build and execute
 - tipo da variável é preenchido depois do nome -> 'var nome string'
 - as variáveis são tipadas, mas podem ser inferidas -> 'var nome = "ed"'
-- no go, também não é necessário usar a palavra reservada var para declaração de variáveis, podemos usar o ':=' -> 'nome := "Ed"'
-
+- no go, também não é necessário usar a palavra reservada var para declaração de variáveis, podemos usar o ':='
+	- 'nome := "Ed"'
+- referencia ponteiro variavel, usar '&' -> &varExample
+- slice -> abstracao do array, basicamente trabalha em cima de um array, sem delimitacao de tamanho maximo
+	- nomes := []string{valores, ...}
+- Multiplexer -> routers
+- O encapsulamento no Go funciona da seguinte maneira: primeira letra maiúscula = private, primeira letra minúscula = public
 
 --------------------
 
@@ -171,5 +183,18 @@ Exemplo: uma classe que possui varias validacoes em uma rotina, pode ser extraid
 	- Às vezes só é necessário um CRUD
 	- Compartilhando dados com outros sistemas, rotinas de integração que recebem ou disponibilizam dados para outros sistemas não devem ser "inteligentes".
 
+## Strategy
+- O Strategy é um padrão de projeto comportamental que transforma um conjunto de comportamentos em objetos e os torna intercambiáveis dentro do objeto de contexto original. O padrão Strategy é muito comum no código Java. É frequentemente usado em várias estruturas para fornecer aos usuários uma maneira de alterar o comportamento de uma classe sem estendê-la. Basicamente é utilizar uma interface com métodos default de um certo comportamento.
+
 # tips
 - ENUM > um enum pode ter implementacao de metodos abstratos nas suas constantes, otimo para definir novos valores dado determinado valor original.
+
+
+--------------------
+
+
+### Flutter
+- Framework baseado em dart
+
+## Widget
+- Toda a parte visual do Flutter é Widget
