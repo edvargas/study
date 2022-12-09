@@ -69,6 +69,7 @@ https://edvargas-aws.signin.aws.amazon.com/console
     - Storing data on virtual drives(EBS)
     - Distributing load across machines(ELB)
     - Scaling the services using an auto-scaling group(ASG)
+
 - Sizing and configuration options
     - SO: Linux, Windows or Mac OS
     - How much CPU
@@ -88,6 +89,7 @@ https://edvargas-aws.signin.aws.amazon.com/console
             - Anything you can think of
         - The EC2 User Data SCript runds with the root user
 - The Instance's public IP may change, but the private IP is aways be the same
+
 - EC2 Instance Types:
     - We can use different ypes of EC2 instances that are optimised for different use cases
     - AWS has the following naming convention, for E.g.: m5.2xlarge:
@@ -117,6 +119,7 @@ https://edvargas-aws.signin.aws.amazon.com/console
             - Cache for in-memory databases (for example, Redis)
             - Data warehousing applications
             - Distributed file systems
+
 - Security Groups: are the fundamentals of network security in AWS
     - They control how traffic is allowed into or out of our EC2 Instances
     - Security groups only contain allow rules
@@ -141,3 +144,83 @@ https://edvargas-aws.signin.aws.amazon.com/console
         - 80 = HTTP - access unsecured websites
         - 443 = HTTPS - access secured websites
         - 3389 = RDP (Remote Desktop Protocol) - log into a Windows instance
+
+- EC2 SSH connection - that is the command to access EC2 from SSH:
+    - ssh -i EC2Turorial.pem ec2-user@44.204.66.19
+    - if we're using key pair on the EC2 instance, it's necessary to user "-i [keyPair]", otherwise, just ignore it
+    - and after that, ec2-user@[instanceIP]
+
+- EC2 Instance Roles - instead use credentials when accessing EC2 instance, we should use IAM Roles on the instance to have access to the AWS functionalities
+
+- EC2 Instances Purchasing Options:
+    - On-Demand Instances - short workload, predictable pricing, pay by second
+        - Pay for what you use
+        - Has the highets cost but no upfront payment
+        - No long-term commitment
+        - Recommended for short-term and un-interrupted workloads, where you can't predict how the application will behave
+    - Reserved Instances (1 and 3 years) - Up to 72% discount comparated to On-demand
+        - Reserved Instances - long workloads
+        - We reserve a specific instance attributes (Instance Type, Region, Tenancy, OS)
+        - Payment Options - No upfront, Partitial upfront, All upfront
+        - Reserved Instance's Scope - Regional or Zonal (reserver capactity in an AZ)
+        - Recommended for steady-stated usage applications (think database)
+        - We can buy and sell in the Reserved Instance Marketplace
+
+        - Convertible reserved instances - long workloads with flexible instances
+            - Can change the EC2 instance type, instance family, OS, scope and tenancy
+            - Up to 66% discount
+    - Saving Plans (1 and 3 years) - commitment to an amount of usage, long workload
+        - Get a discount based on long-term usage (up to 72%)
+        - Commit to a certaing type of usage ($10/hour for 1 or 3 years)
+        - Usage beyond EC2 Savings Planas is billed at the On-Demand price
+
+        - Locked to a specific instance family and AWS region (e.g, M5 in us-east-1)
+        - Flexible across:
+            - Instance Size (e.g., m5.xlarge to m5.2xlarge)
+            - OS (e.g., Linux to Windows)
+            - Tenancy (Host, Dedicated, Default)
+    - Spot Instances - short workloads, cheap, can lose instances (less reliable)
+        - Can get a discount of up to 90% comparated to On-demand
+        - Instances that you can "lose" at any point of time if your ma price is less than the current spot price
+        - The MOST cost-efficient instances in AWS
+
+        - Useful for workloads that are resilient to failure
+            - Batch jobs
+            - Data analysis
+            - Image processing
+            - Any distributed workloads
+            - Workloads with a flexible start and end time
+        - Not Suitable for critical jobs or databases
+    - Dedicated Hosts - book an entire physical server, control instance placement
+        - A physical server with EC2 instance capacity fully dedicated to your use
+        - Allows you address compliance requirements and use your existing server-bound software licences (per-socket, per-core, pe-VM software licenses)
+        - Purchasing Options:
+            - On-demand - pay per second
+            - Reserved - 1 or 3 years (No Upfront, Partial Upfront, All Upfront)
+        - The most expensive option
+
+        - Useful for software that have complicated licensing model (BYOL - Bring Your Own License)
+        - Or for companies that have strong regulatory or compliance needs
+        
+        - I have my own Instance on my own Hardware
+    - Dedicated Instances - no other customer will share your hardware
+        - Instances run on hardware that's dedicated to you
+        - May share hardware with other instances in same account
+        - No control over instance placement (can move hardware after Stop / Start)
+
+        - I physical server itself, that's gives lower level visibility
+    - Capacity Reservations - reserve capacity in a specific AZ for any duration
+        - Reserve On-Demand instances capacity in a specific AZ for any duration
+        - We always have access to EC2 capacity when you need it
+        - No time commitment (create/cancel anytime), no billing discounts
+        - Combine with Regional Reserved Instances and Saving Plans to benefit from billing discounts
+        - We're charged at On-Demand rate wheter you run instances or not
+
+        - Suitable for short-tem, uninterrupted workloads that needs to be in a specific AZ
+
+
+
+
+
+Doubts:
+BYOL - Bring Your Own License?
