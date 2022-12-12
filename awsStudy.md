@@ -191,6 +191,14 @@ https://edvargas-aws.signin.aws.amazon.com/console
             - Any distributed workloads
             - Workloads with a flexible start and end time
         - Not Suitable for critical jobs or databases
+
+        - EC2 Spot Instance Requests:
+            - Define max spot price and get the instance while current spot price < max
+                - The hourly spot price varies based on offer and capacity
+                - If the current spot price > your max price you can choose to stop or teminate your instance
+            - Other strategy: Spot Block
+                - "block"spot instance during a specified time frame (1 to 6 hours) without interruptions
+                - In rare situations, the instance may be reclaimed
     - Dedicated Hosts - book an entire physical server, control instance placement
         - A physical server with EC2 instance capacity fully dedicated to your use
         - Allows you address compliance requirements and use your existing server-bound software licences (per-socket, per-core, pe-VM software licenses)
@@ -218,9 +226,126 @@ https://edvargas-aws.signin.aws.amazon.com/console
 
         - Suitable for short-tem, uninterrupted workloads that needs to be in a specific AZ
 
+    - Which purchasing option is right for me? (Using a resort as example)
+        - On demand: coming and staying in resort whenever we like, we pay the full price
+        - Reserved: like planning ahead and if we plan to star for a long time, we may get a good discount
+        - Saving Plans: pay a certain amount per hour for certain period and stay in any room type
+        - Sport instances: the horel allows people to bid for the empty rooms and the highest bidder keeps the rooms. You can get kicked out at any time
+        - Dedicated Hosts: We book an entire building of the resort
+        - Capacity Reservations: You book a room for a period with full price even you don't staty in it
+
+    - Spot Fleets = set of Spot Instances + (optional) On-Demand Instances
+        - The Spot Fleet will  try to meet the target capacity with price constraints
+            - Define possible launch pools: instance type (m5.large), OS, Availability Zona
+            - Can have multiple launch pools, so t hat the fleet can choose
+            - Spot Fleet stops lauching instances when reaching capacity or max cost
+        - Strategies to allocato Spot Instances:
+            - lowestPrice: from the pool with the lowest price (cost optimization, short workload)
+            - diversified: distributed across all pools (great for availability, long workloads)
+            - capacityOptimized: pool with the optimal capacity for the numbers of instances
+        - Spot Fleets allow us to automatically request Spot Instances with the lowest price
+
+- EC2 - Elastic IPs
+    - When you stop and then start an EC2 instance, it can change its public IP
+    - If you need to have a fixed public IP for your incesntace, you need an Elastic IP
+    - An Elastic IP is a public IPv4 IP you own as long as you don't delete it
+    - You can attach it to one instance at a time
+    - With an Elastic IP address, you can mask the failure of an instance or software by rapidly remapping the address to another instance in your account
+    - You can only have 5 Elastic IP in your account (you can ask AWS to increase that)
+
+    - Overall, try to avoid using Elastic IP
+        - They often reflect poor architectural decisions
+        - Instead, use a random public IP and register a DNS name to it
+        - Or, as we will see later, use a Load Balancer and don't use a public IP
+
+- Placement Groups
+    - Sometimes you want control over the EC2 Instance placement strategy
+    - That strategy can be defined using placement groups
+    - When you create a placement group, you specify one of the following strategies for te group:
+        - Cluster - clusters instances into a low-latency group in a single Availability Zone
+            - Pros - Great network
+            - Cons: If the rack failst, all instances fails at the same time
+            
+            - Use case:
+                - Big Data job that needs to complete fast
+                - Application that need extremely low latency and high network throughput
+        - Spread - spreads instances across underlying hardware (max 7 instances per group per AZ) - critical applications
+            - Pros:
+                - Can span across Availability Zones
+                - Reduced risk is simultaneous failure
+                - EC2 Instances are on different physical hardware
+            - Const:
+                - Limited to 7 instances per AZ per placement group
+            
+            - Use case:
+                - Application that need to maximize high availability
+                - Critical Applications where each instance must be isolated from failure from each other
+        - Partition - spreads instances across many different partitions (which rely on different sets of racks) within an AZ. Scales to 100s of EC2 instances per group (Hadoop, Cassandra, Kafka)
+            - Up to 7 partitions per AZ
+            - Can span across multiple AZs in the same region
+            - Up to 100s of EC2 instances
+            - The instances in a partition do not share racks with the instances in the other partitions
+            - A partitions failure can affect many EC2 but won't affect other partitions
+            - EC2 instances get access to partition information as metadata
+            - Use cases: big data applications, HBase, Cassandra, Kafka
+
+- Elastic Network Interfaces (ENI)
+    - Logical component in a VPC that represents a virtual network card
+    - The ENI can have the following attributes:
+        - Primary private IPv4, one or more secondary PVv4
+        - One Elastic IP (IPv4) per private IPv4
+        - One Public IPv4
+        - One or more security groups
+        - A MAC address
+    - We can create ENI independendtly and attach them on the fly (move them) on EC2 instances for failover
+    - Bound to a specific availability zone (AZ)
+
+- EC2 Hibernate
+    - The in-memory (RAM) stated is preserved
+    - The instance boot is much faster
+    - Under the hood: the RAM state is written to a file in the root EBS volume
+    - The root EBS volume must be encrypted
+
+    - User cases:
+        - Long-rnning processing
+        - Saving the RAM state
+        - Services that take time to initialize
+
+- EBS Volume - Elastic Block Store
+    - An EBS is a network drive you can attach to your instances while they run
+    - It allows your instances to persist data, even after their termination
+    - They can only be mounted to one instance at a time (at the CCP level)
+    - They are bound to a specific availability zone
+
+    - Analogy: Think of them as a "network USB stick"
+    - Free tier: 30 GB of free EBS storage of type General Purpose (SSD) or Magnetic per month
+
+    - It's a network drive (i.e. not a physical drive)
+        - It uses the network to communicate the instance, which means there might be a bit of latency
+        - It can detached from an EC2 instance and attached to another one quickly
+    - It's locked to an AZ
+        - An EBS Volume in us-east-1a cannot be attached to us-east-1b
+        - To move a volume across, you first need to snapshot it
+    - Have a provisioned capacity (size in GBs, and IOPS)
+        - We get billed for all the provisioned capacity
+        - We can increase the capacity of the drive over time
+
+    - EBS - Delete on Terminations attribute
+        - Controls the EBS behaviour when an EC2 instance terminates
+            - By default, the root EBS volume is deleted (attribute enabled)
+            - By default, any other attached EBS volume is not deleted (attribute disabled)
+        - This can be controlled by the AWS console / AWS CLI
+        - User case: preserve root volume when instance is terminated
 
 
 
+
+
+
+
+
+IOPS - I/O operations per second
+rack = hardware
 
 Doubts:
 BYOL - Bring Your Own License?
