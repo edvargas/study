@@ -1,10 +1,9 @@
-- AZ - > Availability Zones
-
+# Amazon AWS Study Solution Architecture Certification
 
 # IAM: User and groups
 - IAM -> Identity and Access Management, global service
-- Root account -> crated by default, shouldn't userd or shared
-- Users/groups can be assinged to json documentos(policy), to refeer whith user/group is allowed to do on the AWS account
+- Root account -> crated by default, shouldn't used or shared
+- Users/groups can be assinged to json documents(policy), to refeer whitch user/group is allowed to do on the AWS account
 - Policies define permissions, don't give more permission that the user needs
 - IAM is a global service, users and groups are created in a global fashion
 
@@ -34,7 +33,7 @@ https://edvargas-aws.signin.aws.amazon.com/console
     - Universal 2nd Factor(U2F)/Hardware Key fob MFA: it's an phisycal key make by a 3rd party company, support for multiple root and IAM users using a single key
 
 - IAM Roles for Services
-    - Some AWS services will need to perform some actions on your behald, for Eg.: EC2 instance escalating memory
+    - Some AWS services will need to perform some actions on your behald, for e.g.: EC2 instance escalating memory
     - To do so, we will assing permissions to AWS services with IAM Roles
     - Commons roles:
         - EC2 Instance roles
@@ -97,7 +96,7 @@ https://edvargas-aws.signin.aws.amazon.com/console
         - 5: generation (AWS imrpvoes them over time)
         - 2xlarge: size within the instance class
     - List of EC2 instance types:
-        - General Purpose: great for a diversity of  workloads such as web servers or code repositories, balance between:
+        - General Purpose: great for a diversity of workloads such as web servers or code repositories, balance between:
             - Compute
             - Memory
             - Networking
@@ -127,10 +126,10 @@ https://edvargas-aws.signin.aws.amazon.com/console
     - Security groups are acting as a "firewall" on EC2 instances, they regulate:
         - Access to Ports
         - Authorised IP ranges - IPv4 or IPv6
-        - Cotrol of inbound network (from other to the instance)
+        - Control of inbound network (from other to the instance)
         - Control of outbound network (from the instance to other)
     - Security group can be attached to multiple instances
-    - Locked down to a region /VPC combination
+    - Locked down to a region / VPC combination
     - Does live "outside" the EC2 - if traffic is blocked the EC2 instance won't see it
     - It's good to maintain one separate security group for SSH access
     - If your application is not accessible (time out), then it's a security group issue
@@ -181,7 +180,7 @@ https://edvargas-aws.signin.aws.amazon.com/console
             - Tenancy (Host, Dedicated, Default)
     - Spot Instances - short workloads, cheap, can lose instances (less reliable)
         - Can get a discount of up to 90% comparated to On-demand
-        - Instances that you can "lose" at any point of time if your ma price is less than the current spot price
+        - Instances that you can "lose" at any point of time if your max price is less than the current spot price
         - The MOST cost-efficient instances in AWS
 
         - Useful for workloads that are resilient to failure
@@ -197,7 +196,7 @@ https://edvargas-aws.signin.aws.amazon.com/console
                 - The hourly spot price varies based on offer and capacity
                 - If the current spot price > your max price you can choose to stop or teminate your instance
             - Other strategy: Spot Block
-                - "block"spot instance during a specified time frame (1 to 6 hours) without interruptions
+                - "block" spot instance during a specified time frame (1 to 6 hours) without interruptions
                 - In rare situations, the instance may be reclaimed
     - Dedicated Hosts - book an entire physical server, control instance placement
         - A physical server with EC2 instance capacity fully dedicated to your use
@@ -230,16 +229,16 @@ https://edvargas-aws.signin.aws.amazon.com/console
         - On demand: coming and staying in resort whenever we like, we pay the full price
         - Reserved: like planning ahead and if we plan to star for a long time, we may get a good discount
         - Saving Plans: pay a certain amount per hour for certain period and stay in any room type
-        - Sport instances: the horel allows people to bid for the empty rooms and the highest bidder keeps the rooms. You can get kicked out at any time
+        - Spot instances: the hotel allows people to bid for the empty rooms and the highest bidder keeps the rooms. You can get kicked out at any time
         - Dedicated Hosts: We book an entire building of the resort
         - Capacity Reservations: You book a room for a period with full price even you don't staty in it
 
     - Spot Fleets = set of Spot Instances + (optional) On-Demand Instances
-        - The Spot Fleet will  try to meet the target capacity with price constraints
-            - Define possible launch pools: instance type (m5.large), OS, Availability Zona
-            - Can have multiple launch pools, so t hat the fleet can choose
+        - The Spot Fleet will try to meet the target capacity with price constraints
+            - Define possible launch pools: instance type (m5.large), OS, Availability Zone
+            - Can have multiple launch pools, so that the fleet can choose
             - Spot Fleet stops lauching instances when reaching capacity or max cost
-        - Strategies to allocato Spot Instances:
+        - Strategies to allocate Spot Instances:
             - lowestPrice: from the pool with the lowest price (cost optimization, short workload)
             - diversified: distributed across all pools (great for availability, long workloads)
             - capacityOptimized: pool with the optimal capacity for the numbers of instances
@@ -256,7 +255,7 @@ https://edvargas-aws.signin.aws.amazon.com/console
     - Overall, try to avoid using Elastic IP
         - They often reflect poor architectural decisions
         - Instead, use a random public IP and register a DNS name to it
-        - Or, as we will see later, use a Load Balancer and don't use a public IP
+        - Or, use a Load Balancer and don't use a public IP
 
 - Placement Groups
     - Sometimes you want control over the EC2 Instance placement strategy
@@ -264,7 +263,7 @@ https://edvargas-aws.signin.aws.amazon.com/console
     - When you create a placement group, you specify one of the following strategies for te group:
         - Cluster - clusters instances into a low-latency group in a single Availability Zone
             - Pros - Great network
-            - Cons: If the rack failst, all instances fails at the same time
+            - Cons: If the rack fails, all instances fails at the same time
             
             - Use case:
                 - Big Data job that needs to complete fast
@@ -307,7 +306,7 @@ https://edvargas-aws.signin.aws.amazon.com/console
     - The root EBS volume must be encrypted
 
     - User cases:
-        - Long-rnning processing
+        - Long-running processing
         - Saving the RAM state
         - Services that take time to initialize
 
@@ -338,7 +337,7 @@ https://edvargas-aws.signin.aws.amazon.com/console
         - User case: preserve root volume when instance is terminated
 
 - EBS Snapshots
-    - Mae a backup (snapshot) of your EBS volume at a point in time
+    - Make a backup (snapshot) of your EBS volume at a point in time
     - Not necessary to detach volume to do snapshot, but recommended
     - Can copy snapshots (backups) across AZ or Region
 
@@ -355,9 +354,9 @@ https://edvargas-aws.signin.aws.amazon.com/console
 - EBS Volume Types
     - EBS Volume come in 6 types:
         - gp2 / gp3 (SSD): General purpose SSD volume that balances price and performance for a wide variety of workloads
-        - io1 / io2 (SSD): Highest-performance SSD volume for mission-critical low-latency or high-thoughput workloads
+        - io1 / io2 (SSD): Highest-performance SSD volume for mission-critical, low-latency or high-thoughput workloads
         - st1 (HDD): Low cost HHD volume designed for frequently accessed, throughput-intensive workloads
-        - sc1 (HDD): Lowest cost HDD volume designed for lesse frequently accessed workloads
+        - sc1 (HDD): Lowest cost HDD volume designed for less frequently accessed workloads
 
     - EBS Volumes are characterized in Size | Throughpu IOPS
     - When in doubt always consult the AWS documentation
@@ -404,7 +403,7 @@ https://edvargas-aws.signin.aws.amazon.com/console
     - Attach the same EBS volume to multiple EC2 instances in the same AZ
     - Each instance has full read and write permissions to the high-performance volume
     - Use case:
-        - Achive higher application availability in clustered Lunux applications (ex: Teradata)
+        - Achive higher application availability in clustered Linux applications (ex: Teradata)
         - Applications must manage concurrent write operations
     - Up to 16 EC2 Instances at a time
     - Must use a file system that's cluster-aware (not XFS, EX4, etc...)
@@ -487,11 +486,112 @@ https://edvargas-aws.signin.aws.amazon.com/console
     - Instance Store maximum amount of IO in EC2 instance, but it's something that you lose, ephemeral
 
 
+# AWS Elastic Load Balancer - ELB
+- Load Balances are servers that forward traffic to multiple servers (e.h., EC2 instances) downstream
+
+- Health Checks
+    - health Checks are crucial for Load Balancers
+    - They enable the load balancer to know if instances it forwards traffic to are available to reply to requests
+    - The health check is done on a port and a route(/heath is common)
+    - If t he response is not 200 (OK), then the instance is unhealthy
+
+- Types of load balancer on AWS
+    - Classic Load Balancer (v1 - old generation) - 2009 - CLB
+        - HTTP, HTTPS, TCP, SSL
+    - Application Load Balancer (v2 - new generation) - 2016 - ALB
+        - HTTP, HTTPS, WebSocket
+    - Network Load Balancer ( v2 - new generation) - 2017 - NLB
+        - TCP, TLS, UDP
+    - Gateway Load Balancer - 202 - GWLB
+        - Operates at layer 3 (Network layer) - IP Protocol
+    
+    - Overall, it is recommended to use the newer generation load balancers as they provide more features
+    - Some load balancers can be setup as internal (private) or external (public) ELBs
+
+- Load Balancer Security Groups
+    - Load Balancer has the own Securty group
+    - For example, we can allow the users from anywhere access the Load Balancer, but the EC2 Instances only allow traffic comming only from the Load Balancer, because de EC2 Security Group will allow HTTP traffic only from the Load Balancer Security Group, this way linking Security Groups, for e.g. in images/img1
+
+- Application Load Balancer (v2) - ALB
+    - Application load balancers is Layer 7 (HTTP)
+
+    - Load Balancing to multiple HTTPS applications across machines (target groups)
+    - Load balancing to multiple applications on the same machine (ex: containers)
+    - Support for HTTP/2 and WebSocket
+    - Support redirects (from HTTP to HTTPS for example)
+
+    - Routing tables to different targe groups:
+        - Routing based on path in URL (example.com/users & example.com/posts)
+        - Routing based on hostname in URL (one.example.com & other.example.com)
+        - Routing based on Query String, Headers (example.com/users?id=123&order=false)
+    - ALB are a great fit for micro services & container-based application (example: Docker & Amazon ECS)
+    - Has a port mapping feature to redirect to a dynamic port in ECS
+    - Has a port mapping feature to redirect to a dynamic port in ECS
+    
+    - Target Groups
+        - EC2 instances (can be managed by an Auto Scaling Groups) - GTTP
+        - ECS tasks (managed by ECS itself) - HTTP
+        - Lambda functions - HTTP request is translated into a JSON event
+        - IP Addresses - must be private IPs
+
+        - ALB can route to multiple target groups
+        - Health checks are at the target group level
+    
+    - Good to Know
+        - Fixed hostname (XXX.region.elb.amazonaws.com)
+        - The application servers don't see the IP of the client directly
+            - The true IP of the client is inserted in the header X-Forwarded-For
+            - We can also get Pot (X-Forwarded-Port) and proto (X-Forwarded-Proto)
+
+- Network Load Balancer (v2) - NLB
+    - Network Load balancers (Layer 4) allow to:
+        - Forward TCP & UDP traffic to your instances
+        - Handle millions of request per second
+        - Less latency ~100 ms ( vs 400 ms for ALB)
+
+    - NLB has one static IP per AZ, and supports assigning Elastic IP (helpful for whitelisting specific IP)
+
+    - NLB are used for extreme performance, TCP or UDP traffic
+    - Not included in the AWS free tier
+
+    - NLB Target Groups
+        - EC2 instances
+        - IP Addresses - must be private IPs
+        - Application Load Balancer(yeah, an ALB)
+        - Health Checks support the TCP, HTTP and HTTPS Protocols
 
 
+
+
+
+# Annotations and doubts
 IOPS - I/O operations per second
 rack = hardware
 throutghput = taxa de transferencia
 
+
 Doubts:
 BYOL - Bring Your Own License?
+
+# Scalability and High Availability
+
+- Scalability means that an applications / system can handle greater loads by adapting
+- There are two kins of scalability
+    - Vertical Scalability
+        - Vertically scalability means increasing the size of the instance
+        - For example, your application runs on a t2.micro, scaling that applications vertically means running it on a t2.large
+        - Vertical scalability is very common for non distributed systems, such as a database
+        - RDS, ElastiCache are services that can scale vertically
+    - Horizontal Scalability (= elasticity)
+        - Horizontal Scalability means increasing the number of instances / systems for your application
+        - Horizontal scaling implies distributed systems
+        - This is very common for web applications / modern applications
+        - It's easy to horizontally scale thanks the cloud offerings such as Amazon EC2
+    - High Availability
+        - High Availability usualy goes hand in hand with horizontal scaling
+        - High availability means running your data applications / system in at least 2 data centers (== AZs)
+        - The goal of high availability is to survive a data center loss
+        - The high availability can be passive (for RDS Multi AZ for example)
+        - The high availability can be active (for horizontal scaling)
+- Scalability is linked but different to High Availability
+
