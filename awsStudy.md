@@ -446,6 +446,15 @@
     - Risk of data loss if hardware fails
     - Backups and Replications are your responsability
 
+- Instance Metadata
+    - AWS EC2 Instance Metadata is powerful but one of the least known features to developers
+    - It allows AWS EC2 instance to "learn about themselves" without using an IAM Role for that purpose
+    - The URL is http://169.254.169.254/latest/meta-data
+    - You can retrieve the IAM Role name from the metadata, but you CANNOT retrieve the IAM Policy
+    Metadata = Info about the EC2 Instance
+    - Userdata = launch script of the EC2 instance
+
+
 ## Amazon EFS - Elastic File System
 
 - Managed NFS (network file system) that can be mounted on many EC2
@@ -1114,9 +1123,7 @@
     - Weighted
         - Control the % of the requests that go to each specific resource
         - Assign each record a relative weight:
-            - traffic (%) = Weight for a specific record
-                            _____________________
-                            Sum of all the weights for all records
+            - traffic (%) = (Weight for a specific record) / (Sum of all the weights for all records)
             - Weights don't need to sum up to 100
         - DNS records must have the same name and types
         - Can be associated with Health Checks
@@ -1131,6 +1138,37 @@
         - Germany users may be redirected to the US (if that's the lowest latency)
         - Can be associated with HEalth Checks (has a failover capability)
 
+    - Failover (Active-Passive)
+        - Once one mandatory Instance is associate with Route 53, and we get an unhealthy statate, Route 53 automatically redirect to another Instance, this secondary instance also can be associated with a Health Check
+
+    - Geolocation
+        - Different from Latency-based
+        - This routing is based on user location
+        - Specify location by Continen, Country or by US State (if ther's overlapping, most precise location selected)
+        - Should create a "Default" record (in case there's no match on location)
+        - Use Cases: website localization, restrict content distribution, load balancing, ...
+        - Can be associated with Health Checks
+    
+    - Geoproximity
+        - images/img10
+        - Route traffic to your resources based on the geographic location of users and resources
+        - Ability to shift more traffic to resources based on the defines bias
+        - To change the size of the geographic region, specify bias values:
+            - To expand (1 to 99) - more traffic to the resource
+            - To shrink (-1 to -99) - less traffic to the resource
+
+        - Resources can be:
+            - AWS resources (specify AWS region)
+            - Non-AWS resources (speficy Latitude and Longitude)
+        - You must use Route 53 Traffic Flow (advanced) to use this feature
+
+    - Multi-Value
+        - Use when routing traffic to multiple resources
+        - Route 53 return multiple values/resources
+        - Can be associated with Health Checks (return only values for healthy resources)
+        - Up to healthy records are returned for each Multi-Value query
+        - Multi-Value is not a substitute for having an ELB, the idea it's to be a client-side load balancing
+
 - Health Checks
     - HTTP Health Checks are only for public resources
     - Health Check => Automated DNS Failover:
@@ -1138,7 +1176,7 @@
         2. Health checks that monitor other health checks (Calculated Health Checks)
         3. Health checks that monitor CloudWatch Alarms (full control) - e.g., throttles of DynamoDB, alarms on RDS, custom metrics,... (helpful for private resources)
     
-    - Health Checks are integrated with CW metrics
+    - Health Checks are integrated with CW (CloudWatch) metrics
 
     - Monitor an Endpoint
         - About 15 global health checkers will check the endpoint health
@@ -1163,6 +1201,416 @@
         - They can't access private endpoints (private VPC or on-premises resource)
 
         - You can create a CloudWatch Metric and associate a CloudWatch Alarm, then create a Health Check that checks the alarm itself
+
+- Domain Registrar vs. DNS Service
+    - You buy or register you domain name with a Domain Registrar typically by paying annual charges (e.g, GoDaddy, Amazon Registrar Inc., ...)
+    - The Domain Registrar usually provides you with a DNS service to manage your DNS records
+    - But you can use another DNS service to manage your DNS records
+    - Example: purchase the domain from GoDaddy and user Route 53 to namage your DNS records
+
+    - 3rd Party Registrar with Amazon Route 53
+        - If you buy your domain on a 3rd party registrar, you can still use Route 53 as the DNS Service provider
+
+        1. Create a Hoste Zone in Route 53
+        2. Update NS Records on 3rd party website to use Route 53 Name Servers
+
+        - Domain Registrar != DNS Service
+        - But every Domain Registrar usually comes with some DNS features
+
+
+## AWS Elastic Beanstalk
+- Elastic Beanstalk is a developer centric view of deploying an application on AWS
+- It uses all the component's regarding application deployment: EC2, ASG, ELB, RDS, ...
+- Managed service
+    - Automatically handles capacity provisioning, load balancing, scaling, application health monitoring, instance configuration, ...
+    - Just the application code is the responibility of the developer
+- We still have full control over the configuration
+- Beanstalk is free but you pay for the underlying instances
+
+- Components
+    - Application: collection of Elastic Beanstalk component (environments, versions, configurations, ...)
+    - Applications Version: an iteration of your application code
+    - Environment
+        - Collection of AWS resources running an application version (only one application version at a time)
+        - Tiers: Web Server Environment Tier And Worker Environment Tier
+        - You can create multiple environments (dev, test, prod, ...)
+    
+- Suppoerted Platforms 
+    - Go, Java SE
+    - Java with Tomcat
+    - .NET Core on Linux
+    - .NET on Windows Server
+    - Node.js
+    - PHP
+    - Python
+    - Ruby
+    - Packer Builder
+    - Single Container Docker
+    - Multi-container Docker
+    - Preconfigured Docker
+
+- Web Server Tier vs Worker Tier
+    - images/img31
+
+## AWS S3 
+- Amazon S3 is one of the main building blocks of AWS
+- It's advertised as "infinitely scaling" storage
+
+- Many websites use Amazon S3 as a blackbone
+- Many AWS services use Amazon S3 as an integration as well
+
+- User Cases
+    - Backup ans storage
+    - Disaster Recovery
+    - Archive
+    - Hybrid Cloud storage
+    - Application hosting
+    - Media hosting
+    - Data lakes and big data analytics
+    - Software delivery
+    - Static website
+
+- Buckets
+    - Amazon S3 allows people to store objects (files) in "buckets" (directories)
+    - Buckets must have a globally unique name (across all regions and accounts)
+    - Buckets are defined at the region level
+    - S3 looks like a global service but buckets are created in a region
+    - Naming convention
+        - No uppercase, No underscore
+        - 3-63 characters long
+        - Not an IP
+        - Must start with lowercase letter or number
+        - Must NOT start with the prefix xn--
+        - Must NOT end with the suffix -s3alias
+
+- Objects
+    - Objects (files) have a key
+    - The key is the FULL path
+        - s3:my-bucket/my_file.txt
+    - The key is composed of prefix + object name
+    - There's no concept of "directories" within buckets (although the UI will trick you to think otherwise)
+    - Just keys with very long names that contains slaches ("/")
+
+    - Object values are the content of the body:
+        - Max. Object Size is 5TB
+        - If uploading more than 5GB, must use "multi-part upload"
+    
+    - Metadata (list of text key / value pair - system or user metadata)
+    - Tags (Unicode key / value pair - up to 10) - useful for security / lifecycle
+    - Version ID (if versioning is enabled)
+
+- Security
+    - User-Based
+        - IAM Policies - wich API calls should be allowed for a specific user from IAM
+    
+    - Resource-Based
+        - Bucket Policies - bucket wide rules from the S3 console - allows cross account
+        - Object Access Control List (ACL) - finer grain (can be disabled)
+        - Bucket Access Control List (BCL) - less common (can be disabled)
+        
+    - Note: an IAM principal can access an S3 object if
+        - The user IAM permissions ALLOW it OR the resource policy ALLOWS it
+        - AND ther's no explicit DENY
+    
+    - Encryption: encrypt objects in Amazon S3 using encryption keys
+
+- S3 Bucket Policies
+    - JSON based policies
+        - Resources: buckets and objects
+        - Effect: Allow / Deny
+        - Actions: Set of API to Allow or Deny
+        - Principal: The account or user to apply the policy to
+    
+    - Use S3 bucket for policty to:
+        - Grant public access to the bucket
+        - Force objects to be encrypted at upload
+        - Grant access to another account
+    
+- Static Website Hosting
+    - S3 can host static websites and have them accessible on internet
+    
+    - If you get a 403 Forbidden error, make sure the bucket policy allows public reads
+
+- Versioning
+    - You can version your files in Amazon S3
+    - It is enabled at the bucket level
+    - Same key overwrite will change the "version": 1, 2, 3...
+    - It's best pratice to version your buckets
+        - Protec against unintended deletes (ability to restor a version)
+        - Easy roll back to previous version
+    
+    * Notes:
+        - Any file that is not versioned prior to enabling versioning will have version "null"
+        - Suspending versioning does not delete the previous versions
+
+- Replication (CRR & SRR)
+    - Must enable Versioning in source and destination buckets
+    - Cross-Region Replication (CRR)
+    - Same-Region Replication (SRR)
+    - Buckets can be in different AWS accounts
+    - Copying is asynchronous
+    - Must give proper IAM permissions to S3
+    
+    - Use cases:
+        - CRR - compliance, lower latency access, replication across accounts
+        - SRR - log aggregation live replication between production and test accounts
+
+    - After you enable Replication, only new objects are replicated
+    - Optionally, you can replicate existing objects using S3 Batch Replication
+        - Replicates existing objects and objectts that failed replication
+    
+    - For DELETE operations
+        - Can replicate delete markers from source to targe (optional setting)
+        - Deletions with a version ID are not replicated (to avoid malicious deletes)
+    
+    - There is no "chaining" of replication
+        - If bucket 1 has replication into bucket 2, wich has replication into bucket 3, then objects created in bucket 1 are not replicated to bucket 3
+
+- Storage Classes
+    - Amazon S3 Standard - General Purpose
+    - Amazon S3 Standard-Infrequent Access (IA)
+    - Amazon S3 One Zone-Infrequent Access
+    - Amazon S3 Glacier Instant Retrieval
+    - Amazon S3 Glacier Flexible Retrieval
+    - Amazon S3 Glacier Deep Archive
+    - Amazon S3 Intelligent Tiering
+
+    - Can move between classes manually or using S3 Lifecycle configurations
+
+    - S3 Durability and Availability
+        - Durability: High durability (99,99%) of objects across multiple AZ
+
+        - Availability: 
+            - Measures how readily available a service is
+            - Varies depending on storage class
+
+    - S3 Standard - General Purpose
+        - 99,99% of Availability
+        - User for frequently accessed data
+        - Low latency and high throughput
+        - Sustain 2 concurrent facility failures
+
+        - Use cases: Big Data analytics, mobile & gaming applications, content distribution...
+
+    - S3 Storage Classes - Infrequent Access
+        - For data that is less frequently accessed, but requires rapid access when needed
+        - Lower cost thant S3 Standard
+
+        - Amazon S3 Standard-Infrquent Access (S3 Standard-IA)
+            - 99.9% Availability
+            - Use cases: Dissaster Recovery, backups
+
+        - Amazon S3 One Zone-Infrequent Access (S3 One Zone-IA)
+            - High durability (99.99999999999%) in a sigle AZ; data lost when AZ is destroyed
+            - 99.5% Availability
+            - Use cases: storing secondary backup copies of on-premise data, or data you can recreate
+
+    - S3 Glacier Storage Classes
+        - Low-cost object storage meant for archiving / backup
+        - princing: price for stare + object  retrieval cost
+
+        - Amazon S3 Glacier Instant Retrieval
+            - Milisecond retrieval, great for data accessed once a quarter
+            - Minuum storage duration of 90 days
+        - Amazon S3 Glacier Flexible Retrieval (formerly Amazon S3 Glacier)
+            - Expedited (1 to 5 minutes), Standard (3 to 5 hours), Bulk (5 to 12 hours) - free
+            - Minimum storage duration of 90 days
+        - Amazon S3 Glacier Deep Archive - for long term storage:
+            - Standard (12 hours), Bulk (48 hours)
+            - Minimum storage duration of 180 days
+
+    - S3 Intelligent-Tiering
+        - Small monthly monitoring and auto-tiering fee
+        - Moves objects automatically between Access Tiers based on usage
+        - There are no retrieval charges in S3 Intelligent-Tiering
+
+        - Frequent Access tier (automatic): default tier
+        - Infrequent Access tier (automatic): objects not accessed for 30 days
+        - Archive Instant Access tier (automatic): objects not accessed for 90 days
+        - Archive Access tier (optional): configurable from 90 days to 700+ days
+        - Deep Archive Access tier (optional): configurable from 180 days to 700+ days
+
+- Moving between Storage Classes
+    - You can transition objects between storage calsses
+    
+    - For infrequently accessed object, move them to Standard IA
+    - For archive objects that you don't need fast access to, move them to Glacier or Glacier Deep Archive
+
+    - Moving Objects can be automated using a Lifecycle Rule
+
+    - Lifecyle Rules
+        - Transition Actions - configure objects to transition to another storage class
+            - Move objects to Standard IA class 60 days after creation
+            - Move to Glacier for archiving after 6 months
+
+        - Expiration actions - configure objects to expire (delete) after some time
+            - Access log files can be set to delete after a 365 days
+            - Can be used to delete old versions of files (if versioning is enabled)
+            - Can be used to delete incomplete Multi-Part uploads
+
+        - Rules can be created for a crtain prefix (example:s3://mybucket/mp3/*)
+        - Rules can be created for certain objects Tags (example:Department:Finance)
+
+        - Scenario 1:
+            - Your application on EC2 creates images thimbnails after profile photos are uploaded to AS3. These thumbnails can be easily recreated, and only need to be kept for 60 days. The source images should be able to be immediately retrieved for these 60 days, and afterwards, the user can wait up to 6 hours. How would you design this?
+
+            - S3 source images can be on Standard, with a lifecycle configuration to transition them to Glacier after 60 days
+            - S3 thumbnails can be on One-Zone IA, with a lifecycle configuration to expire them after 60 days.
+        
+        - Scenario 2:
+            A rule in your company states that you should be able to recover your deleted S3 objects immediately for 30 days, although this may happen rarely. After this time, and for up to 365 days, deleted objects should be recoverable within 48 hours.
+
+            - Enable S3 Versioning in order to have object versions, so that "deleted objects" are in fact hidden by a "delete marker" and ca ben recovered
+            - Transition the "noncurrent versions" of the object to Standard IA
+            - Transition afterwards the "noncurrent versions" to Glacier Deep Archive
+    
+    - Storage Class Analysis
+        - help you decide when to transition objects to the right sotrage class
+        - Recommendations for Standard and Standard IA
+            - Does NOT work for One-Zone IA or Glacier
+        - Report is updated daily
+        - 24 to 48 hours to start seeing data analysis
+
+        - Good first step to put together Lifecycle Rules
+
+- Requester Pays
+    - images/img32
+    - In general, bucket owners pay for all Amazon S3 storage and data transfer costs associated with their bucket
+    - With Requester Pays buckets, the requester instead of the bucket owner pays the cost of the request and the data download from the bucket
+    - Helpful when you want to share large datasets with other accounts
+    - The requester must be authenticated in AWS (cannot be anonymous)
+
+- Event Notifications
+    - Events are things shuch as: S3: S3:ObjectCreated, S3:ObjectRemoved, S3:ObjectRestore, S3:Replication...
+    - Object name filtering possible (*.jpg)
+    - Use case: generate thumbnails of images uploaded to S3
+    - The events could be triggered to SNS, SQS, Lambda Functions, ...
+    - Can create as many "S3 events" as desired
+
+    - S3 event notifications typically deliver events in seconds but can sometimes take a minute or longer
+
+    - Integration with Amazon EventBridge
+        - images/img33
+        - Advanced filtering options with JSON rules (metadata, object size, name, ...)
+        - Multiple Destinations - ex Step Functions, Kinesis Streams / Firehose ...
+        - EventBridge Capabilities - Archive, Replay Events, Reliable delivery
+
+- Baseline Performance
+    - Amazon S3 automatically sacles to high request rates, latency 100-200 ms
+    - Your Application can achieve at least 3,500 PUT/COPY/POST/DELETE and 5,500 GET/HEAD requests per second per prefix in a bucket
+    - There are no limits to the number of prefixes in a bucket
+    
+- Performance
+    - Multi-Part upload:
+        - Recommended for files > 100MB, must use for files > 5GB
+        - Can help parellelize uplodas (speed up transfers)
+    - S3 Transfer Acceleration
+        - Increase transfer speed by transferring file to an AWS edge location which will forward the data to the S3 bucket in the target region
+        - Compatible with multi-part upload
+    
+    - S3 By-Range Fetches
+        - Parallelize GETs by requesting specific byte ranges
+        - Better resilience in case of failures
+
+        * Can be user to speedup downloads
+        * Can be used to retrieve only partial data (for example the head of a file)
+
+- S3 Select & Glacier Select
+    - Retrieve less data using SQL by performing server-side filtering
+    - Can filter by rows & columns (simple SQL statements)
+    - Less network transfer, less CPU cost client-side
+
+- Batch Operations
+    - Perform bulk operations on existing S3 objects with a single request, example:
+        - Modify object metadata & roperties
+        - Copy objects between S3 buckets
+        - Ecnrypt un-encrypted objects
+        - Modify ACLs, tags
+        - Restore objects from S3 Glacier
+        - Invoke Lambda function to perform custom action on each object
+    - A job consists of a list of objects, the action to perform, and optional parameters
+    - S3 Batch Operations manages retries, tracks progress, send completion notifications, generate reports ...
+    - You can use S3 Inventory to get object list and use S3 Select to filter your objects
+
+
+
+
+
+## Classic Solutions Architecture Examples
+- These solutions architectures are some example how to all the technologies below work togheter
+
+- Stateless Web App: WhatsIsTheTime.com
+    - Stateless Web App: WhatIsTheTime.com
+        - images/img11
+        - WhatIsTheTime.com allows people to know what time it is
+        - We don't need a database
+        - We want to start small and can accept downtime
+        - We want to fully scale vertically and horizontally, no downtime
+
+        - Scalling proccess:
+            - images/img11 to images/img18
+            - Topics used on the scalling proccess:
+                - Public vs Private IP and EC2 instances
+                - Elastic IP vc Route 53 vs Load Balancers
+                - Route 53 TTL, A records and Alias Records
+                - Maintaining EC2 instances manually vcs Auto Scaling Groups
+                - Multi AZ to survive disasters
+                - ELB Health Checks
+                - Security Group Rules
+                - Reservation of capacity for costing saving when possible
+                - We're considering 5 pillars for a well architected application: cost, performance, reliability, security, operational excellence
+    
+    - Stateful Web App: MyClothes.com
+        - MyClothes.com allows people to buy clothes online
+        - There's a shopping cart
+        - Our website is having hundreads of users at the same time
+        - We need to scale, maintain horizontal scalability and keep our web application as stateless as possible
+        - Users should not lose their shopping cart
+        - Users should have their details (address, etc) in a database
+
+        - Scalling proccess, 3-tier architectures for web applications
+            - images/img19 to images/img25
+            - EBLA sticky sessions
+            - Web clients for storing cookies and making our web app stateless
+            - ElastiCache
+                - For storing sessions (alternatvie: DynamoDB)
+                - For caching data from RDS
+                - Multi AZ
+            - RDS
+                - For storing user data
+                - Read replicas for scaling reads
+                - Multi AZ for disasters recovery
+            - Tight Security with security groups referencing each other
+
+    - Stateful Web App: MyWordPress.com
+        - We area trying to create a fully scalable WordPress website
+        - We want that website to access and correctly display picture uploads
+        - Our user data, and the blog content should be stored in a MySQL database
+
+        - Scalling proccess:
+            - images/img26 to images/img30
+            - Aurora Database to have easy Multi-AZ and Read-Replicas easier
+            - Storing data in EBS (single instance application)
+            - Vs Storing data in EFS (distributed application)
+            
+- Instantiating Applications quickly
+    - When launching a full stack (EC2, EBS, RDS), it can take time to:
+        - INstall applications
+        - Insert initial (or recovery) data
+        - Configure everything
+        - Launch the application
+
+    - We can take advantage of the cloud to speed that up
+
+    - Instantiatin Applications quickly
+        - EC2 Instances:
+            - Use a Golden AMI: INstall your applications, OS dependencies etc... beforehand and launch your EC2 instance from the Golden AMI
+            - Bootstrap using User Data: For dynamic configuration, use User Data scripts
+            - Hybrid: mix GOlden AMI and User Data (Elastic Beanstalk)
+        - RDS databases:
+            - Restore from a snapshot: the database will have schemas and data ready
+        - EBS Volumes:
+            - Restore from a snapshot: the disk will already be formatted and have data
 
 
 
