@@ -1532,6 +1532,417 @@
     - S3 Batch Operations manages retries, tracks progress, send completion notifications, generate reports ...
     - You can use S3 Inventory to get object list and use S3 Select to filter your objects
 
+- Object Encryption
+    - You can ecnrypt objects in S3 buckets using one of 4 methods
+
+    - Server-Side Encryption (SSE)
+        - Server-Sider Encryption with Amazon S3-Managed Keys (SSE-S3)
+            - Encrypts S3 objects using keys handled, managed, and owned by AWS
+        - Server-Side Encryption with KMS Key stored in AWS KMS (SSE-KM)
+            - Leverage AWS Key Management Service (AWS KMS) to manage encryption keys
+        - Server-Side Encryption with Customer-Provided Keys (SSE-C)
+            - When you want to manage your own encryption keys
+        - Client-Side Encryption
+
+        - It's important to understand wich ones are for wich situation for the exam
+
+    - SSE-S3
+        - Encryption using keys handled, managed, and owned by AWS
+        - Object is encrypted server-side
+        - Encryption type is AWS-256
+        - Must set header "x-amz-server-side-encryption": "AES256"
+
+    - SSE-KSM
+        - Encryption using keys handled and managed by AS KMS (Key Management Service)
+        - KSM advantages: user control + audit key usage using CloudTrail
+        - Object is encrypted server side
+        - Must set header "x-amz-servier-side-encryption": "aws:kms"
+
+        - Limitations
+            - If you use SSE-KMS, you may be impacted by the KMS limits
+            - When you upload, it calls the GenerateDataKey KMS API
+            - When you download, it calls the Decrypt KSM API
+            - Count towards the KMS quota per second (5500, 10000, 30000 req/s based on region)
+            - You can request a quota increase using the Service Quotas Console
+    
+    - SSE-C
+        - Server-Side Encryption using keys fully managed by the customer outside of AWS
+        - Amazon S3 does NOT store the encryption key you provide
+        - HTTTPS must be used
+        - Encryption key must be provided in HTTP headers, for every HTTP request made
+
+    - Client-Side Encryption
+        - Use client libraries such as Amazon S3 Client-Side Encryption Library
+        - Clients must encrypt data themselves before sending to Amazon S3
+        - Clients must decrypt data themselves when retireving from Amazon S3
+        - Customer fully manages the keys and encryption cycle
+
+    - Encryption in transit (SSL/TLS)
+        - Amazon S3 exposes two endpoints:
+            - HTTPS Endpoint - non encrypted
+            - HTTPS Endpoint - encryption in flight
+
+            - HTTPS is recommended
+            - HTTPS is mandatory for SSE-C
+            - Most clients would use the HTTPS endpoint by default
+
+    - Default Encryption vs. Bucke Policies
+        - One way to "force encryption" is to use a bucket policy and refuse any API call to PUT and S3 object without encryption headers
+        - Policy example: images/img34
+        - Another way is to use the "default encryption" option in S3
+        * Note: Bucket POlicies are evaluated before "default encryption"
+
+    - S3 CORS
+        - CORS (Cross-Origin Resource Sharing)
+            - Origin = schem (protocol) + host (domain) + port
+                - example: https://www.example.com (implied port is 443 for HTTPS, 80 for HTTP)
+            - Web Browser based mechanism to allow request to other origin while visiting the main origin
+            - Same origin: http://example.com/app1
+             and http://example.com/app2
+            - Different origins: http://example.com and http://otherexample.com
+            - The requests won't be fulfilled unless the other origin allows for the requests, using CORS Headers (example: Access-Control-Allow-Origin)
+        - If a client makes a cross-origin request on our S3 bucket, we need to enable the correct CORS headers
+        - It's a popular exam question
+        - You can allow for a specific origin or for * (all origins)
+    
+    - MFA Delete
+        - force users to generate a code on a device before doing important operations on S3
+        - MFA will be required to:
+            - Permanently delete an object version
+            - Suspend Versioning on the bucket
+        - MFA won't be required to:
+            - Enable Versioning
+            - List deleted versions
+        - To use MFA Delete, Versioning must be enabled on the bucket
+        - Only the bucket owner (root account) can enable/disable MFA Delete
+- Access Logs
+    - For audit purpose, you may want to log all access to S3 buckets
+    - Any request made to S3, from any account, authorized or denied, will be logged into another S3 bucket
+    - That data can be analyzed using data analysis tools...
+    - The target loggin bucket must be in the same AWS region
+
+    - Warning
+        - Do not set your logging bucket to be the monitored bucket
+        - It will create a logging loop, and your bucket will grow exponentially
+
+- Pre-Signed URLs
+    - Generated pre-signed URLs using the S3 Console, AWS CLI or SDK
+    - URL Expiration
+        - S3 Console - 1min up to 720 mins (12 hours)
+        - AWS CLI - configure expiration with --expires-in parameter in seconds (default 3600 secs, max 604800 secs ~ 168 hours)
+    - Users given a pre-signed URL inherit the permissions of the user that generated the URL for GET / PUT
+
+    - Examples:
+        - Allows only logged-in users to download a premium video from your S3 bucket
+        - Allow and ever-changing list of users to download files by generations URLs dynamically
+        - Allow temporarily a user to upload a file to a precise location in your S3
+    
+- S3 Glacier Vault Lock
+    - Adopt a WORM (Write Once Read Many) model
+    - Create a Vault Lock Policy
+    - Lock the policy for future edits (can no longer be changed or deleted)
+    - Helpful for compliance and data retention
+
+- S3 Object Lock (versioning must be enabled)
+    - Adopt a WORM model
+    - Block an object version deletion for a specified amount of time
+    - Retention mode - Compliance:
+        - Objects versions can't be overwritten or deleted by any user, including the root user
+        - Objects retention modes can't be changed, and retention periods can't be shrtened
+    - Retention mode - Governance:
+        - Most users can't overwrite or delete an object version or alter its lock settings
+        - Some users have special permissiions to charge the retention or delete the object
+    - Retention Period: protect the object for a fixed period, it can be extended
+    - Legal Host:
+        - Protect the object indefinitely, independent from retention period
+        - can be freely placed and removed using the s3:PutObjectLegalHold IAM permission
+    
+- Access Points
+    - images/img35
+    - Each Access Point gets its own DNS and policy to limit who can access it
+        - A specific IAM user / group
+        - One policy per ACcess Point => Easier to manage than complex bucket policies
+
+    - S3 Object Lambda
+        - images/img36
+        - Use AWS Lambda Function to change the object before it is retrieved by t he caller application
+        - Only one S3 bucket is needed, on top of wich we create S3 Access Point and S3 Object Lambda ACcess Points
+        
+        - Use Cases:
+            - Redacting personally identifiable information for analytics or non-production environments
+            - Converting across data  formats, sucha as converting XML to JSON
+            - Resizing and watermarking images on the fly using caller-specific details, such as the user who requested the object
+    
+
+## AWS CloudFront
+- Content Delivery Network (CDN)
+- Imrpoves read performance, content is cached at the edge
+- Improves users experience
+- 216 Point of Presence globally (edge locations)
+- DDoS protection (because worldwide), integration with Shield, AWS Web Application Firewall
+
+- Origins
+    - S3 bucket
+        - For distributing files and caching them at the edge
+        - Enhanced security with CloudFront Origin Access Control (OAC)
+        - OAC is replacing Origin Access Identity (OAI)
+        - CloudFront can be used as an ingress (to upload files to S3)
+    
+    - Custom Origin (HTTP)
+        - Application Load Balancer
+        - EC2 instance
+        - S3 website (must first enable the bucket as a static S3 website)
+        - Any HTTP backend you want
+
+    - CloudFront at a high level
+        - images/img36
+
+    - S3 as an Origin
+        - images/img37
+
+    - CloudFront vs S3 Cross Region Replication
+        - CloudFront:
+            - Global Edge network
+            - Files are cached for a TTL (maybe a day)
+            - Great for static content that must be available everywhere
+        - S3 Cross Region Replication:
+            - Must be setup for each region you want replication to happen
+            - Files are updated in near real-time
+            - Ready only
+            - Great for dynamic content that need to be available at low-latency in few regions
+
+    - ALB or EC2 as an origin
+        - images/img38
+
+- Geo Restriction
+    - You can restric who can access your distribution
+        - Allowlist: Allow your users to access your content only if they're in one of  the countries on a list of approved countries
+        - Blocklist: Prevent your users from accessing your content if the're in one of the countries on a list of banned countries
+    - The "country" is determined using a 3rd party Geo-IP database
+    - Use cases: Copyright Laws to control access to content
+
+- Pricing
+    - CloudFront Edge locations are all around the world
+    - The cost of data out per edge location varies
+
+    - Price Classes
+        - You can reduce the number of edge locations for cost reduction
+        - Three price classes:
+            1. Price Class All: all regions - best performance
+            2. Price Class 200: most regions, but excludes the most expensive regions
+            3. Price Class 100: only the least expensive regions
+    
+- Cache Invalidations
+    - images/img39
+    - In case you update the back-end origin, CloudFront doesn't know about it and will only get the refreshed content after the TTL has expired
+    - However, you can force an entire or partial cache refresh (thus bypassing the TTL) by performing a CloudFront Invalidation
+    - You can invalidate all files (*) or a special path (/images/*)
+
+
+
+## AWS Global Accelerator
+- Leverage the AWS internal network to route to your application
+- 2 Anycast IP are created for your application
+- The Anycast IP send traffic directly to Edge Locations
+- The Edge locations send the traffic to your application
+
+- Works with Elastic IP, EC2 instances, ALB, NLB, public or private
+- Consistent Performance
+    - Intelligent routing to lowest latency and fast regional failover
+    - No issue with client cache (because the IP doesn't change)
+    - Internal AWS network
+- Health Checks
+    - Global Accelerator performs a health check of your applications
+    - Helps make your application global (failover less than 1 minute for unhealthy)
+- Security
+    - only 2 external IP need to be whitelisted
+    - DDoS protection thanks to AWS Shield
+
+- AWS Global Accelerator vs CloudFront
+    - They both use the AWS global network and its edge locations around the world
+    - Both services integrate with AWS Shield for DDoS protection
+
+    - CloudFront
+        - Improves performance for both cacheable content (such as images and videos)
+        - Dynamic content (such as API acceleration and dynamic site delivery)
+        - Content is served at the edge
+    - Global Accelerator
+        - Improves performance for a wide range of applications over TCP or UDP
+        - Proxying packets at the edge to applications running in one or more AWS Regions
+        - Good f it for non-HTTP use cases, such as gaming (UDP, IoT) (MQTT), or Voice over IP
+        - Good for HTTP use cases that require static IP addresses
+        - Good for HTTP use cases that required deterministic, fast regional failover
+
+
+
+## AWS Snow Family
+- Highly-secure, portable devices to collect and process data at the edge, and migrate data into and out of AWS
+
+- Data migration (physical devices):
+    - Snowcone
+    - Snowball Edge
+    - Snowmobile
+
+- Edge computing:
+    - Snowcone
+    - Snowball edge
+
+- Data migration with AWS Snow Family
+    - images/img40
+    - AWS Snow Family: offline devices to eprform data migrations
+    - If it takes more than a week to transfer over the network, use Snowball devices
+
+    - AWS Snowball Edge (for data transfers)
+        - Physical ata transport solution: move TBs or PBs of data in or out of AWS
+        - Alternative to moving data over the network (and paying network fees)
+        - Pay per data transfer job
+        - Provide block storage and Amazon S3-compatible object storage
+        
+        - Snowball Edge Storage Optimized
+            - 80 TB of HDD capacity for block volume and S3 compatible object storage
+        - Snowball Edge Compute Optimized
+            - 42 TB of HDD capacity for block volume and S3 compatible object storage
+        
+        - Use cases: large data cloud migrations, DC decommision, disaster recovery
+
+    - AWS Snowcone
+        - Small, portable computing, anywhere, rugged & secure, withstands harsh envrionments
+        - Light, 2.1kg
+        - Device used for edge computing, storage, and data transfer
+        - 8 TBs of usable storage
+        - Use Snowcone, where Snowball does not fit (space-constrained environment)
+        - Must provide your own battery / cables
+
+        - Can be sent back to AWS offline, or connect it to intenet and use AWS DataSync to send data
+
+    - AWS Snowmobile (it's actually a truck!!)
+        - Transfer exabyte of data (1 EB = 1,000 PB)
+        - Each Snowmobile has 100 PB of capacity (use multiple in parallel)
+        - High security: temperature controlled, GPS, 24/7 video surveillance
+        - Better than Snowball if you transfer more than 10 PB
+    
+    - Usage Process
+        1. Request Snowball devices from the AWS console for delivery
+        2. Install the snowball client / AWS OpsHub on your servers
+        3. Connect the snowball to your servers and copy files using the client
+        4. Ship back the device when you're done (goes to the right AWS facility)
+        5. Data will be loaded into an S3 bucket
+        6. Snowball is completely wiped
+    
+- Edge Computing
+    - Process data while it's being created on an edge location
+        - example: A truck on the road, a ship on the sea, a mining stating underground...
+    - These locations may have
+        - Limited / no internet access
+        - Limited / no easy access to computing power
+    - AWS setup a Snowball Edger / Snowcone device to do edge computing
+    - Use cases of Edge Computing:
+        - Preprocess data
+        - Machine learning at the edge
+        - Transcoding media streams
+    - Eventually (if need be) we can ship back the device to AWS (for transferring data for example)
+
+    - Snowcone (smaller)
+        - 2 CPUs, 4 GB of memory, wired or wireless access
+        - USB-C power using a cord or the optional battery
+    - Snowball Edge - Compute Optimized
+        - 52 vCPUs, 208 GiB of RAM
+        - Optional GPU
+        - 42 TB usable storage
+    - Snowball Edge - Storage Optimized
+        - Up to 40 vCPUs, 80 GiB of RAM
+        - Objects storage clustering available
+    - All: can run EC2 Instances & AWS Lambda functions (using aWS IoT Greengrass)
+    - Long-term deployment options: 1 and 3 years discounted pricing
+
+- AWS OpsHub
+    - Historically, to use Snow Family devices, you needed a CLI
+    - Today, you can use AWS OpsHub (a software you install on your computer / laptop) to manage your Snow Family Device
+        - Unlocking and configuring single or clustered devices
+        - Transferring files
+        - Launching and managing instances running on Snow Family Devices
+        - Monitor device metrics (storage capacity, active instances on your device)
+        - Launch compatible AWS services on your devices (ex: Amazon EC2 instances, AWS DataSync, Network File System NFS))
+
+
+
+## Amazon FSx
+- Launch 3rs party high-performance file systems on AWS
+- Fully managed service
+
+- FSx for Windows (File Serve)
+    - FSx for Windows if a fully managed Windows file system share drive
+    - Supports SMB protocol & Windows NTFS
+    - Microsoft Active Directory integration, ACLs, user quotas
+    - Can be mounted on Linux EC2 instances
+    - Supports Microsoft's Distributed File SYstem (DFS) Namespaces (group files across multiple FS)
+
+    - Scale up to 10s of GB/s, millions of IOPS, 100s PB of data
+    - Storage Options:
+        - SSD - latency sensitvie workloads (databses, media processing, data analytics, ...)
+        - HDD - broad spectrum of workloads (home directory, CMS, ...)
+    - Can be accessed from your on-premises infrastructure (VPN or Direct Connect)
+    - Can be configured to be Multi-AZ (high availability)
+    - Data is backed-up daily to S3
+
+- FSx for Lustre
+    - Lustre is a type of prallel distributed file system, for large-scale computing
+    - The name Lustre is derived from "Linux" and "cluster"
+
+    - Machine Learning, High Performance Computing (HPC)
+    - Video Processing, Financial Modeling, Electronics Design Automation
+    - Scales up to 100s GB/s, millions of IOPS, sub-ms latencies
+    - Storage Options:
+        - SSD - low-latency, OPS intensive workloads, small & random file operations
+        - HDD - throughput-intensive workloads, large & sequential file operations
+    - Seamless integration with S3
+        - Can "read S3" as a file system (through FSx)
+        - Can write the output of the computations back to S3 (through FSx) 
+    - Can be used from on-premises servers (VPN or Direct Connect)
+
+- FSx File System Deployment Options
+    - Scratch File System
+        - Temporary storage
+        - Data is not replicated
+        - High burst
+        - Usage: short-term processing, optimize costs
+    - Persistent File System
+        - Long-term storage
+        - Data is replicated within same AZ
+        - Replace failed files within minutes
+        - Usage: long-term processing, sensitive data
+
+- FSx for NetApp ONTAP
+    - Managed NetApp ONTAP on AWS
+    - File System compatible with NFS, SMB, iSCSI protocol
+    - Move workloads running on ONTAP or NAS to AWS
+    - Works with:
+        - Linux
+        - Windows
+        - MacOS
+        - VMware cloud
+        - Amazon Workspace & AppStream 2.0
+        - Amazon EC2, ECS and EKS
+    - Storage shrinks or grows automatically
+    - Snapshots, replication, low-cost, compression and data de-duplication
+    - Point-in-time instatntaneous cloning (helpful for testing new workloads)
+
+- FSx for OpenZFS
+    - Managed OpenZFS file system on AWS
+    - File System compatible with NFS (v3, v4, v4.1, v4.2)
+    - Move workloads running on ZFS to AWS
+    - Works with:
+        - Linux
+        - Windows
+        - MacOS
+        - VMware cloud
+        - Amazon Workspace & AppStream 2.0
+        - Amazon EC2, ECS and EKS
+    - Up to 1,000.000 IOPS with < 0.5ms latency
+    - Snapshots, compression and low-cost
+    - Point-in-time instantaneous cloning
+
+
 
 
 
@@ -1645,3 +2056,10 @@ BYOL - Bring Your Own License?
         - The high availability can be active (for horizontal scaling)
 - Scalability is linked but different to High Availability
 
+
+
+
+## Unicast IP vs Anycast IP
+- Unicast IP: one server holds one IP address
+
+- Anycast IP: all servers hold the same IP address and the client is routed to the nearest one
