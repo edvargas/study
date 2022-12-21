@@ -1866,7 +1866,7 @@
 
 
 
-## Amazon FSx
+## AWS FSx
 - Launch 3rs party high-performance file systems on AWS
 - Fully managed service
 
@@ -1942,6 +1942,436 @@
     - Snapshots, compression and low-cost
     - Point-in-time instantaneous cloning
 
+
+## AWS Storage Gateway
+- Hybrid Cloud for Storage
+    - AWS is pushing for "hybrid cloud"
+        - Part of your infrasctructure is on the cloud
+        - Part is on-premises
+    - This can be due to
+        - Long cloud migrations
+        - Security requirements
+        - Compliance requirements
+        - IT strategy
+    - S3 is a proprietary stora technology (unlike  EFS / NFS)
+
+- Bridge between on premises data and cloud data
+- Use cases:
+    - disaster recovery
+    - backup & restore
+    - tiered storage
+    - on-premises cache & low-latency files access
+
+- Types of storage Gateway:
+    - S3 File Gateway
+        - images/img41
+        - Configure S3 buckets are accessible using the NFS and SMB protocol
+        - Most recently used data is cached in the file gateway
+        - Supports S3 Standard, S3 Standard IA, S3 One Zone A, S3 Intelligent Tiering
+        - Transition to S3 Glacier using a Lifecycle Policy
+        - Bucket access using IAM role for each File Gateway
+        - SMB Protocol has integration with Active Directory (AD) for user authentication
+    - FSx File Gateway
+        - images/img42
+        - Native access to Amazon FSx for Windows File Server
+        - Local cache for frequently accessed data
+        - Windows native compatibility (SMB, NTFS, Active Directory...)
+        - Useful for group file shares and home directories
+    - Volume Gateway
+        - images/img43
+        - Block storage using iSCSI protocol backed by S3
+        - Backed by EBS snapshots wich can help restore on-remises volumes
+        - Cached volumes: low latency access to most recent data
+        - Stored volumes: entire datased is on premise, scheduled backup to S3
+    - Tape Gateway
+        - images/img44
+        - Some companies have backup processes using physical tapes (!)
+        - With Tape Gateway, companies use the same processes but, in the cloud
+        - Virtual Tape Library (VTL) backed by Amazon S3 and Glacier
+        - Back up data using existing tape-based processes (and iSCSI interface)
+        - Works with leading backup software vendors
+
+- Hardware appliance
+    - Using Storage Gateway means you need on-premises virtualization
+    - Otherwise, you can use a Storage Gateway Hardware Appliance
+    - Works with File Gateway, Volume Gateway, Tape Gateway
+    - Has the required CPU, memory, network, SSD cache resources
+    - Helpful for daily NFS backups in small data centers
+
+- Summerizing
+    - images/img45
+
+
+## AWS Transfer Family
+- A fully-managed service for file transfers into and out of Amazon S3 or Amazon EFS using the FTP protocol
+- Suppoerted Protocols
+    - AWS Transfer for FTP (File Transfer Protocol)
+    - AWS Transfer for FTPS (File Transfer Protocol over SSL)
+    - AWS Transfer for SFTP (Secure File Transfer Protocol)
+- Managed infrastructure, Scalable, Reliable, Highly Available (multi-AZ)
+- Pay per provisioned endpoint per hour + data transfers in GB
+- Store and manage users credentials within the service
+- Integrate with existing authentication systems (Microsoft Active Directory, LDAP, Okta, Amazon Cognito, custom)
+- Usage: sharing files, public datasets, CRM, ERP, ...
+- images/img46
+
+
+## AWS DataSync
+- Move large amount of data to and from
+    - On-premises / Other cloud to AWS (NFS, SMB, HDFS, S3 API...) - needs agent
+    - AWS to AWS (different storage services) - no agent needed
+- Can synchronize to:
+    - Amazon S3 (any storage classes- including Glacier)
+    - Amazon EFS
+    - Amazon FSx (Windows, Lustre, NetApp, OpenZFS...)
+- Replication tasks can be scheduled hourly, daily, weekly
+- File permissions and metadata are preserved (NFS POSIX, SMB...)
+- One agend task can use 10 Gbps, can setup a bandwidth limit
+- images/img47
+
+
+
+## Storage Comparison
+- S3: Object Storage
+- S3 Glacier: Object Archivel
+- EBS volumes: Network storage for one EC2 instance at a time
+- Instance Storage: Physical storage for your EC2 instance (high IOPS)
+- EFS: Network File System for Lynux instances, POSIX filesystem
+- FSx for Windwos: Network Fily System for Windows servers
+- FSx for Lustre: High Performance Computing Linux file system
+- FSx For NetApp ONTAP: High OS Compability
+- FSx for OpenZFS: Managed ZFS file system
+- Storage Gateway: Bridge - S3 & FSx File Gateway, Volume Gateway (cache & stored), Tape Gateway
+- Transfer Family: FTP, FTPS, SFTP insterface on top of amazon S3 or Amazon EFS
+- DataSync: Schedule data sync from on-premises to AWS, or AWS to AWS
+- Snowcone / Snowball/ Snowmobile: to move large amount of data to the cloud, physically
+- Database: for specific worklaods, usually with indexing and querying
+
+
+## AWS SQS
+- Standard Queue
+    - Oldes offering (over 10 yeasr old)
+    - Fully managed service, used to decouple applications
+
+    - Attributes:
+        - Unlimited throughput, unlimited numbers of messages in queue
+        - Default retention of messages: 4 days, maximum of 14 days
+        - Low latency (< 10 ms on public and receive)
+        - Limitation of 256KB per message sent
+    
+    - Can have duplicate messages
+    - Can have out of order messages 
+
+- Producing Messages
+    - Produced to SQS using the SDK
+    - The message is persisted in SQS until a consumer deletes it
+    - MEssage retention: default 4 days, up to 14 days
+
+    - SQS standard: unlimited throughput
+
+- Consuming Messages
+    - Consumers (running on EC2 instances, servers, or AWS Lambda)...
+    - Poll SQS for messages
+    - Process t he messages
+    - Delete the messages using the DeleteMessage API
+
+- Multiple EC2 Instances Consumers
+    - Consumers receive and process messages in parallel
+    - At least once delivery
+    - Best-effort message ordering
+    - Consumers delete messages after processing them
+    - We can scale consumers horizontally to improve throughput of processing
+
+- SQS with ASG
+    - images/img48
+    - SQS as a buffer to database writes
+        - images/img50
+    - SQS to decouple between application tiers
+
+- SQS to decouple between application tiers
+    - images/img49
+
+- Security
+    - Encryption:
+        - In-flight encryption using HTTPS API
+        - At-rest encryption using KMS keys
+        - Client-side encryption if the client wants to perform encryption/decryption itself
+    
+    - Access Controls: IAM policies to regulate access to the SQS API
+
+    - SQS Access Policies (similar to S3 bucket policies)
+        - Useful for cross-account access to SQS queues
+        - Useful for allowing other services (SNS, S3...) to write to an SQS queue
+
+- Message Visibility Timeout
+    - After a massage is polled by a consumer, it becomes invisible to other consumers
+    - By default, the "message visibility timeout" is 30 seconds
+    - That means that message has 30 seconds to be precessed
+    - After a message visibility timeout is over, the message is "visible" in SQS
+
+    - If a message is not processed within the visibility timeout, it will be processed twice
+    - A consumer could call the ChangeMessageVisibility API to get more time
+    - If a visibility timeout is high (hours), and consumer crashes, re-processing will take time
+    - If visibility timeout is too low (seconds, we may get duplicates)
+
+- Long Polling
+    - When a consumer requests messages from the queue, it can optionally "wait" for messages to arrive if there are none in the queue
+    - This is called Long Polling
+    - LongPolling decreases the number of API calls made to SQS while increasing the efficiency and latency of your application
+    - The wait time can be between 1 sect to 20 sec
+    - Long Polling is preferable to Short Polling
+    - Long Polling can be enabled at the queue level or at the API level using WaitTimeSeconds
+
+- FIFO Queues
+    - First In First Out - ordering of messages in the queue
+    - Limited throughput: 300 msg/s without batching, 3000 msg/s with
+    - Exactly- once send capability (by removing duplicates)
+    - Messages are processed in order by the consumer
+
+
+## AWS SNS (Simple Notification Service)
+- In a scenario that we need to send a message to many receivers, the "event producer" only sends message to one SNS topic
+- As many "event receivers" (subscriptions) as we want to listen to  the SNS topic notifications
+- Each subscriber to the topic will get all the messages (note: new feature to filter messages)
+- Up to 12,500,000 subscriptions per topic
+- 100,000 topics limit
+- images/img/51
+
+- SNS integrates with a lot of AWS services
+    - Many AWS services can send data directly to SNS for notifications
+
+- How to publish
+    - Topic Publish (using the SDK)
+        - Create a topic
+        - Create a subscription (or many)
+        - Publish to the topic
+    - Direct Publish (for mobile apps SDK)
+        - Create a platform application
+        - Create a platform endpoint
+        - Publish to the platform endpoint
+        - Works with Google GCM, Apple APNS, Amazon ADM ...
+
+- Security
+    - Encryption:
+        - In-flight encryption using HTTPS API
+        - At-rest encryption using KMS keys
+        - Client-side encryption if the client wants to perform encryption/decryption itself
+    
+    - Access Controls: IAM policies to regulate access to the SQS API
+
+    - SNS Access Policies (similar to S3 bucket policies)
+        - Useful for cross-account access to SNS topics
+        - Useful for allowing other services (S3...) to write to an SQS queue
+
+- SNS + SQS: Fan Out
+    - images/img52
+    - Push one in SNS, receive in all SQS queues that are subscribers
+    - Fully decoupled, no data loss
+    - SQS allows for: data persistence, delayed processing and retries of work
+    - Ability to add more SQS subscribers over time
+    - Make sure your SQS queue access policy allows for SNS to write
+    - Cross-Region Delivery : works with SQS Queues in other regions
+
+    - Application: S3 Events to multiple queues
+        - For the same combination of: event type (e.g. object create) and prefix (e.g. images/) you can only have one S3 Event Rule
+        - If you want to send the same S3 event to many SQS queues, use fan-out
+        - images/img53
+
+    - Application: SNS to Amazon S3 through Kinesis Data Firehose
+        - SNS can send to Kinesis and therefore we can have the following solutions architecture: images/img54
+
+- FIFO Topic
+    - First In First Out
+    - Similar features as SQS FIFO:
+        - Ordering by Message Group ID
+        - Deduplication using a Deduplication ID or Content Based Deduplication
+    - Can only have SQS FIFO queues as subscribers
+    - Limited throughput (same throughput as SQS FIFO)
+
+- Message Filterign
+    - JSON policy used to filter messages sent to SNS topic's subscriptions
+    - If a subscription doen't have a filter policy, it receives every message
+    - images/img55
+
+
+## AWS Kinesis
+- Makes it easy to collect, process, and analyze streaming data in real-time
+- Ingest real-time data such as: Application logs, Metrics, Website clickstreams, IoT telemtry data...
+
+- Kinesis Data Streams: capture, process, and store data streams
+    - images/img56
+    - Retention between 1 to 365 days
+    - Ability to reprocess (replay) data
+    - Once data is inserted in Kinesis, it can't be deleted (immutability)
+    - Data tha shares the same partition goes to the same shard (ordering)
+    - Producers: AWS SDK, Kinesis Producer Library (KPL), Kinesis Agent
+    - Consulmers:
+        - Write your own: Kinesis Client Library (KCL), AWS SDK
+        - Managed: AWS Lambda, Kinesis Data Firehose, Kinesis Data Analytics
+
+    - Capacity Modes
+        - Provisioned mode:
+            - You choose the number of shards provisioned, scale manually or using API
+            - Each shard gets 1MB/s in (or 1000 records per second)
+            - Each shard gets 2MB/s out (classic or enhanced fan-out consumer)
+            - You pay per shard provisioned per hour
+        - On-demand mode:
+            - No need to provision or manage the capacity
+            - Default capacity provisioned (4 MB/s in or 4000 records per second)
+            - Scales automatically based on observed throughput peak during the last 30 days
+            - Pay per stream per hour & data in/out per GB
+        
+    - Security
+        - Control access / authorization using IAM policies
+        - Encryption in flight using HTTPS endpoints
+        - Encryption at rest using KMS
+        - You can implement encryption/drcryption of data on client side
+        - VPC Endpoint available for Kinesis to access within VPC
+        - Monitor API calls using CloudTrail
+
+- Kinesis Data Firehose: load data streams into AWS data stores
+    - images/img57
+    - Fully Managed Service, no administration, automatic scaling, serveless
+        - AWS: Redshift / Amazon S3 / ElasticSearch
+        - 3rd party partiner: Splunk / MongoDB
+        - Custom: send to any HTTP endpoint
+    - Pay for data goindg through Firehose
+    - Near Real Time
+        - 60 seconds latency minimum for non full batches
+        - Or minimum 1 MB of data at a time
+    - Supports many data formats, conversions, transformations, compression
+    - Supports custom data transformations using AWS Lambda
+    - Can send failed or all data to a backup S3 bucket
+    - Automatic scaling
+    - No data Storage
+    - Doesn't support replay capability
+
+- Kinesis Data Analytics: analyze data streams with SQL or Apache Flink
+
+- Kinesis Video Streams: capture, process, and store video streams
+
+- Ordering data into Kinesis
+    - Imagine you have 100 trucks (truck_1, truck_2, ... truck_100) on the road sending their GPS position regularly into AWS
+    - You want to consume the data in order for each truck, so that you can track their movement accurately
+    - Its should send using a "Parition Key" valur of the "truck_id"
+    - The same key will always go to the same shard
+
+
+## SQS vs SNS vs Kinesis
+- SQS:
+    - Consumer "pull data"
+    - Data is deleted after being consumed
+    - Can have as many workers (consumers) as we want
+    - No need to provision throughput
+    - Ordering guarantees only on FIFO queues
+    - Individual message delay capability
+- SNS:
+    - Push data to many subscribers
+    - Up to 12,500,000 subscribers
+    - Data is not persisted (lost if not delivered)
+    - Pub/Sub model
+    - Up to 100,000 topics
+    - No need to provision throughput
+    - Integrates with SQS for fan-out architecture pattern
+    - FIFO capability for SQS FIFO
+- Kinesis:
+    - Standard: pull data
+        - 2 MB per shard
+    - Enhanced-fan out: push data
+        - 2MB pershard per consumer
+    - Possibility to replay data
+    - Meant for real-time big data, analytics and ETL
+    - Ordering at the sard level
+    - Data expeires after x days
+    - Provisioned mode or on-demand capacity mode
+
+
+## Amazon MQ
+- SQS, SNS are "cloud-native" services
+- Traditional applications running from -n-premises may use open protocols such as: MQTT, AMQP, STOMP, Openwire, WSS
+- When migrating to the cloud, instead of re-engineering the application to use SQS and SNS, we can use Amazon MQ
+- Amazon MQ is managed messa broker service for: RabbitMQ, ActiveMQ
+- Amazon MQ doesn't "scale" as much as SQS / SNS
+- Amazon MQ runs on servers, can run in Multi-AZ with failover
+- Amazon MQ has both queue features and topic features
+
+
+## AWS ECS
+- ECS = Elastic Container Service
+
+- EC2 Launch Type
+    - Launch Docker containers on AWS = Launch ECS Tasks on ECS Clusters
+    - EC2 Launch Type: you must provision & maintain the infrastructure (the EC2 instances)
+    - Each EC2 instances must run the ECS Agent to register in the ECS Cluster
+    - AWS takes care of starting / stopping containers
+    - images/img58
+
+- Fargate Launch Type
+    - Launch Docker containers on AWS
+    - You don't provision the infrastructure (no EC2 Instances to manage)
+    - It's all Serverless
+    - You just create task definitions
+    - AWS just runs ECS Tasks for you based on the CPU / RAM you need
+    - To scale, just increase the numbers of tasks, Simple - no more EC2 instances
+    - images/img59
+
+- IAM Roles for ECS
+    - images/img60
+    - EC2 Instance Profile (EC2 Launch Type only):
+        - Used by the ECS agent
+        - Makes API calls to ECS service
+        - Send container logs to CloudWatch Logs
+        - Pull Docker image from ECR
+        - Reference sensitive data in Secrets Manager os SSM Parameter Store
+    - ECS Task Role:
+        - Allows each task to have a specific role
+        - Use different roles for the different ECS Services you run
+        - Task Role is defined in the task definition
+
+- Load Balancer Integrations
+    - Application Load Balancer supported and works for most use cases
+    - Network Load Balancer recommended only for high throughput / high performance use cases, or to pair it with AWS Private Link
+    - Elastic Load Balancer supported but no recommended (no advanced features - no Fargate)
+
+- Data Volumes (EFS)
+    - Mount EFS file systems onto ECS tasks
+    - Works for both EC2 and Fargate launch types
+    - Tasks running in any AZ will share the same data in the EFS file System
+    - Fargate + EFS = Serverless
+    - images/img61
+    
+    - Use cases: persistent multi-AZ shared storage for your containers
+    
+    * Note: Amazon S3 cannot be mounted as a file system
+
+- ECS Service Auto Scaling
+    - Automatically increase/decrease the desired number of ECS tasks
+
+    - Amazon ECS Auto Scaling uses AWS Application Auto Scaling
+        - ECS Service Avarage CPU Utilization
+        - ECS Service Avarage Memory Utilization - Scale on RAM
+        - ALB Request Count Per Targer - metric coming from the ALB
+    - Target Tracking - scale based on target value for a specific CloudWatch metric
+    - Step Scaling - scale based on a specified CloudWatch Alarm
+    - Scheduled Scaling - scale based on a specified date/time (predictable changes)
+
+    - ECS Service Auto Scaling (task level) != EC2 Auto Scaling (EC2 instance level)
+    - Fargate Auto Scaling is much easirr to setup (because Serverless)
+
+    - EC2 Launch Type - Auto Scaling EC2 Instances
+        - Accommodate ECS Service Scaling by adding underlying EC2 Instances
+
+        - Auto Scaling Group Scaling
+            - Scale your ASG based on CPU Utilization
+            - Add EC2 instances over time
+
+        - ECS Cluster Capacity Provider
+            - Used to automatically provision and scale the infrastructure for your ECS Tasks
+            - Capacity Provider paired with an Auto Scaling Group
+            - Add EC2 Instances when you're missing capacity (CPU, RAM...)
+    
+    - ECS Scaling - Service CPU Usage Example
+        - images/img62
 
 
 
