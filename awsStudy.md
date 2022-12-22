@@ -2632,9 +2632,9 @@
     - Doesn't require application logic modification (compatible with existing DynamoDB APIs)
     - 5 minute TTL for cache (default)
     - images/img72
-
+    
     - DAX vs. ElastiCache
-        - ![DAX vs. ElastiCache](/images/img73.png "DAX vs. ElastiCache")
+    ![DAX vs. ElastiCache](/images/img73.png)
 
 
 
