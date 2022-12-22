@@ -1676,7 +1676,7 @@
 
 ## AWS CloudFront
 - Content Delivery Network (CDN)
-- Imrpoves read performance, content is cached at the edge
+- Improves read performance, content is cached at the edge
 - Improves users experience
 - 216 Point of Presence globally (edge locations)
 - DDoS protection (because worldwide), integration with Shield, AWS Web Application Firewall
@@ -2373,6 +2373,271 @@
     - ECS Scaling - Service CPU Usage Example
         - images/img62
 
+- Solution Architecture
+    - ECS tasks invoked by Event Bridge
+        - images/img63
+    
+    - SQS Queue Example
+        - images/img64
+
+
+## AWS ECR
+- ECR = Elastic Container Registry
+- Store and manage Docker images on AWS
+- Private and Public repository (Amazon ECR Public Gallery)
+- Fully integrated with ECS, backend by Amazon S3
+- Access is controlled through IAM (permission errors => policy)
+- Supports image vulnerability scanning, versioning, image tags, image lifecycle, ...
+
+
+## AWS EKS
+- Amazon EKS = Amazon Elastic Kubernates Service
+- It is a way to launch managed Kubernetes clusters on AWS
+- Kubernetes is an open-source system for automatic deployment, scaling and management of containerize (usually Docker) application
+- It's an alternative to ECS, similar goal but different API
+- EKS supports EC2 if you want to deploy worker nodes or Fargate to deploy serverless containers
+- Use case: if your company is already using Kubernetes on-premises or in another cloud, and wants to migrate to AWS using Kubernetes
+- Kubernetes is cloud-agnostic (can be used in any cloud - Azure, GCP ...)
+- images/img65
+
+- Node Types
+    - Managed Node Groups
+        - Creates and manages Nodes (EC2 instances) for you
+        - Nodes are part of an ASG managed by EKS
+        - Supports On-Demand of Spot Instances
+
+    - Self-Managed Nodes
+        - Nodes created by you and registered to the EKS cluster and managed by an ASG
+        - You can use prebuilt AMI - Amazon EKS Optmized AMI
+        - Supports On-Demanad or Spot Instances
+
+    - AWS Fargate
+        - No maintenence required; no nodes managed
+
+- Data Volumes
+    - Need to specify StorageClass manifest on your EKS cluster
+    - Leverages a Container Storage Interface (CSI) compliant driver
+
+    - Support for:
+        - Amazon EBS
+        - Amazon EFS
+        - Amazon EFS (works with Fargate)
+        - Amazon FSx for Lustre
+        - Amazon FSx for NetApp ONTAP
+
+
+## AWS App Runner
+- Fully managed service that makes it easy to deploy web applications and APIs at scale
+- No infrastructure experience required
+- Start with your source code or container image
+- Automatically builds and deploy the web app
+- Automatic saciling, highly available, load balancer, encryption 
+- VPC access support
+- Connect to database, cache, and message queue services
+
+- Use cases: web apps, APIs, microservices, rapid produtction deployments
+
+
+## AWS Lambda
+- Virtual functions - no servers to manage
+- Limited by time - short executions
+- Run on-demand
+- Scaling is automated
+
+- Benefits of Lambda
+    - Easy Pricing:
+        - Pay per request and compute time
+        - Free tier for 1,000,000 AWS Lambda requests and 400,000 GBs of compute time
+    
+    - Integrated with the whole AWS suite of services
+    - Integrated with many programming languages
+    - Easy monitoring through AWS CloudWatch
+    - Easy to get more resources per functions (up to 10GB of RAM)
+    - Increasing RAM will also improve CPU and network
+
+- Language support
+    - Node.js
+    - Python
+    - Java
+    - C# (.NET Core)
+    - Golang
+    - C# / Powershell
+    - Ruby
+    - Custom Runtime API (community supported, example Rust)
+    - Lambda Container Image
+        - The container image must implement the Lambda Runtime API
+        - ECS / Fargate is preferred for running arbitraty Docker images
+
+- Lambda Integrations
+    - API Gateway
+    - Kinesis
+    - DynamoDB
+    - S3
+    - CloudFront
+    - CloudWatch Events EventBridge
+    - CloudWatch Logs
+    - SNS
+    - SQS
+    - Cognito
+
+- Princing
+    - Pay per calls:
+        - First 1,000,000 requests are free
+        - $.20 per 1 million requests threafter
+    - Pay per duration:
+        - 400,000 GB-seconds of compute time per month if FREE
+        - == 400,000 se conds if functions is 1GB RAM
+        - == 3,200,000 seconds if function is 128 MB RAM
+    - IT is usually very cheap to run AWS Lambda so it's very popular
+
+- Lambda Limits to Know - per region
+    - Execution:
+        - Memory allocation: 128 MB - 10GB (1 MB increments)
+        - Maximum execution time: 900 seconds (15 minutes)
+        - Environment variables (4 KB)
+        - Disk capacity in the "function containet" (in /tmp): 512 MB to 10 GB
+        - Concurrency executions: 1000 (can be increased)
+    - Deployment:
+        - Lambda function deployment size (compressed .zip): 50 MB
+        - Size of uncompressed deployment (code + dependencies): 250 MB
+        - Can use the /tmp directory to load other files at startup
+        - Size of environment variables: 4 KB
+    
+- Customization At The Edge
+    - Many modern applications execute some form of the logic at the edge
+    - Edge Function:
+        - A code that you write and attach to CloudFront distributions
+        - Runs close to your users to minimize latency
+    - CloudFront provides two types: CloudFront Functions & Lambda@Edge
+    - You don't have to manage any servers, deployed globally
+
+    - Pay only for what you use
+    - Fully serverless
+
+    - Use cases: 
+        - Customize the CDN contante
+        - Website Security and Privacy
+        - Dynamic Web Application at the Edge
+        - Search Engine Optimization (SEO)
+        - Intelligently Route Across Origins and Data Centers
+        - Bot Mitigation at the Edge
+        - Real-time Image Transformation
+        - A/B Testing
+        - User Authentication and Authorization
+        - User Prioritization
+        - USer Tracking and Analytics
+
+    - CloudFront Functions
+        - Lightweight functions written in JavaScript
+        - For high-scale, latency-sensitive CDN customizations
+        - Sub-ms starttup times, millions of requests/second
+        - User to change Viewer requests and responses:
+            - Viewer Request: after CloudFront receives a rquest from a viewer
+            - Viewer Response: before CloudFront forwards the response to the viewer
+        - Native feature of CloudFront (manage code entirely within CloudFront)
+        - iamges/img66
+
+    - Lambda@Edge
+        - Lambda functions writte in NodeJS or Python
+        - Scales to 1000s of requests/seconds
+        - Used to change CloudFront requests and respones:
+            - Vewer Request - after CloudFront receives a request from a viewer
+            - Origin Request - before CloudFront forwards the responde to the origin
+            - Origin Response - after CloudFront receives the response from the origin
+            - Viewer Response - before CloudFront forwards the response to the viewer
+        - Author your functions in one AWS Region (us-east-1), then CloudFront replicates to its locations
+        - images/img67
+
+    - CloudFront Functions vs. Lambda@Edge
+        - images/img68
+
+        - Use cases:
+            - CloudFront Functions
+                - Cache key normalization
+                    - Transform request attributes (headers, cookies, query strings, URL) to create an optimal Cache Key
+                - Header manipulation
+                    - Insert/modify/delete HTTP headers in the request or response
+                - URL reqwrites or redirects
+                - Request authentication & authorization
+                    - Create and validate user-generated tokens (e.g, JWT) to allow/deny requests
+            
+            - Lambda@Edge
+                - Longe execution time (several ms)
+                - Adjustable CPU or memory
+                - Your code depends on a 3rd libraries (e.g., AWS SDK to access other AWS services)
+                - Network access t o use external services for processing
+                - File system access or access to the body of HTTP requests
+
+- VPC
+    - By default, your Lambda function is launched outside your own VPC (in an AWS-owned VPC)
+    - Therefore, it cannot access resources in your VPC (RDS, ElastiCache, internal ELB...)
+    - images/img69
+
+    - To access Lambda in VPC, you must define the VPC ID, the Subnets and the Security Groups
+    - Lambda will create an ENI (elastic Network Interface) in your subnets
+    - images/img70
+
+- Lambda with RDS Proxy
+    - If Lambda functions directly access your databse, they may open too many connections under high load
+    - RDS Proxy
+        - Imrpove scalability by pooling and sharing DB connections
+        - Improve availability by reducing by 66% the failover time and preserving connections
+        - Improve security by enforcing IAM authentication and storing credentials in Secrets Manager
+    - The Lambda functions must be deployed in your VPC, because RDS Proxy is never publicly accessible
+    - images/img71
+
+
+## AWS DynamoDB
+- Fully managed, highly available with replication across multiple AZs
+- NoSQL database - not a relational database - with transaction support
+- Scales to massive workloads, distributed database
+- Millions of requests per seconds, trillions of row, 100s of TB of storage
+- Fast and consistent in performance (single-digit milisecond)
+- Integrated with IAM for security, authorization and administration
+- Low cost and auto-scaling capabilities
+- No maintenance or patching, always available
+- Standard & Infrequent Access (IA) Table Class
+
+- Basics
+    - DynamoDB is made of Tables
+    - Each table has a Primary Key (must be decided at creation time)
+    - Each table can have an infinite number of items (=rows)
+    - Each item has attributes (can be added over time - can be null)
+    - Maximum size of an item is 400KB
+    - Data types supported are:
+        - Scalar Types - String, Number, Binary, Boolean, Null
+        - Document Types - List, Map
+        - Set Types - String Set, Number Set, Binary Set
+    - Therefore, in DynamoDB you can rapidly evolve schemas
+
+- Read/Write Capacity Modes
+    - Control how you manage your table's capacity (read/write throughput)
+
+    - Provisioned Mode (default)
+        - You specify the number of reads/writes per second
+        - You need to plan capacity beforehand
+        - Pay for provisioned Read Capacity Units (RCU) & Write Capacity Units (WCU)
+        - Possibility to add aut-oscaling mode for RCU & WCU
+    
+    - On-Demand Mode
+        - Read/writes automatically scale up/down with your workloads
+        - No capacity planning needed
+        - Pay for what you use, more expensive
+        - Great for unpredictable workloads, steep sudden spikes
+    
+- DynamoDB Accelerator (DAX)
+    - Fully-managed highly available, seamless in-memory cache for DynamoDB
+    - Help solve read congestion by caching
+    - Microseconds latency for cached data
+    - Doesn't require application logic modification (compatible with existing DynamoDB APIs)
+    - 5 minute TTL for cache (default)
+    - images/img72
+
+    - DAX vs. ElastiCache
+        - ![DAX vs. ElastiCache](/images/img73.png "DAX vs. ElastiCache")
+
+
+
 
 
 
@@ -2493,3 +2758,23 @@ BYOL - Bring Your Own License?
 - Unicast IP: one server holds one IP address
 
 - Anycast IP: all servers hold the same IP address and the client is routed to the nearest one
+
+## Serverless
+- Serverless is a new paradigm in wich developers don't have to manage servers anymore...
+- They just deploy code
+- They just deploy functions
+- Initially Serverless == FaaS (Function as a Service)
+- Serverless was pioneered by AWS Lambda but now also includes anything that's managed: "databases, messaging, storage, etc."
+- Serverless does not mean there are no servers... it means you just don't manage / provision / see them
+
+- Serverless in AWS
+    - AWS Lambda
+    - DynamoDB
+    - AWS Cognito
+    - AWS API Gateway
+    - Amazon S3
+    - AWS SNS and SQS
+    - AWS Kinesis Data Firehose
+    - Aurora Serverless
+    - Step Funcitons
+    - Fargate
