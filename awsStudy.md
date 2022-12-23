@@ -495,7 +495,7 @@
     - Instance Store maximum amount of IO in EC2 instance, but it's something that you lose, ephemeral
 
 
-## AWS Elastic Load Balancer - ELB
+## AWS ELB - Elastic Load Balancer
 - Load Balances are servers that forward traffic to multiple servers (e.h., EC2 instances) downstream
 
 - Health Checks
@@ -670,7 +670,7 @@
     - Can be disabled (set value to 0)
     - Set to a low value if your requests are short
 
-## AWS Auto Scaling Group - ASG
+## AWS ASG - Auto Scaling Group
 - In real-life, the load on your websites and applications can change
 - In the cloud, yo ucan create and get rid of servers very quickly
 - images/img3
@@ -732,7 +732,7 @@
     - Advice: Use a ready-to-use AMI to reduce configuration time in order to be serving request fasters an reduce the cooldown period
 
 
-## AWS Relational Database Service - RDS
+## AWS RDS - Relational Database Service - 
 - RDS stands for Relational Database Service
 - It's a managed DB service for DB use SQL as a query language
 - It allows you to create databases in the cloud that are managed by AWS
@@ -2541,7 +2541,7 @@
         - Lambda functions writte in NodeJS or Python
         - Scales to 1000s of requests/seconds
         - Used to change CloudFront requests and respones:
-            - Vewer Request - after CloudFront receives a request from a viewer
+            - Viewer Request - after CloudFront receives a request from a viewer
             - Origin Request - before CloudFront forwards the responde to the origin
             - Origin Response - after CloudFront receives the response from the origin
             - Viewer Response - before CloudFront forwards the response to the viewer
@@ -2684,8 +2684,82 @@
         - Creates a new table
         - Import errors are logged in CloudWatch Logs
 
+## AWS API Gateway
+- API Gateway is a serverless service that allows us to create REST API that will be public for clients
+- AWS Lambda + API Gateway: No infra to manage
+- Support for the WEbSocket Protocol
+- Handle API versioning (v1, v2...)
+- Handle different environments (dev, test, prod...)
+- Handle secuity (Authentication and Authorization)
+- Create API keys, handle request throttling
+- Swagger / Open API import to quickly define APIs
+- Transform and validate requests and responses
+- Generate SDK and API specifications
+- Cache API responses
+
+- Integrations High Level
+    - Lambda Function
+        - Invoke Lambda function
+        - Easy way to expose REST API backend by AWS Lambda
+    - HTTP
+        - Exporte HTTP endpoint in the backend
+        - Example: internal HTTP API on premise, Application Load Balancer...
+    - AWS Service
+        - Expose any AWS API through the API Gateway
+        - Example: start an AWS Step Function workflow, post a message to SQS
+
+- Endpoint Types
+    - Edge-Optimized (dfault): For global clients
+        - Requests are routed through the CloudFront Edge locations (improves latency)
+        - The API Gateway still lives in only one region
+    - Regional:
+        - For clients within the same region
+        - Could manually combne with CloudFront (more control over the caching strategies and the distribution)
+    - Private:
+        - Can only be accessed from your VPC using an interface VPC endpoint (ENI)
+        - Use a resource policy
+
+- Security
+    - User Authentication through
+        - IAM Roles (useful for internal applications)
+        - Cognito (identify for external users - example mobile users)
+        - Custom Authorizer (your own logic)
+    - Custom Domain Name HTTPS security through integration with AWS Certificate Manager (ACM)
+        - If using Edge-Optimized endpoint, then the certificate must be in us-east-1
+        - If using Regional endpoint, the certificate must be in the API Gateway region
+        - Must setup CNAME or A-alias record in Route 53
 
 
+## AWS Step Functions
+- Build serverless visual workflow to orchestrate your Lambda functions
+- Features: sequence, parallel, conditions, timeouts, error handling, ...
+- Can integrate with EC2, ECS, On-premises
+  servers, API Gateway, SQS queues, etc...
+- Possibility of implementing human approval feature
+- Use cases: order fulfillment, data processing, web applications, any workflow
+
+
+## Chosing the Right Database
+- We have a lot of managed databases on AWS to choose from
+- Questions to choose the right database based on your architecture:
+    - Readh-heavy, write-heavy, or balanced workload? Throughput needs? Will it change, does it need to scale or fluctuate during the day?
+    - How much data to store and for how long? Will it grow? Avarage Object size? How are they accessed?
+    - Data durability? Source of truth for the data?
+    - Latency requirements? Source of truth for the data?
+    - Latency requirements? Concurrent users?
+    - Data model? How will you query the data? Joins? Structured? Semi-Structured?
+    - Strong schema? More flexibility? Reporting? Search? RDBMS / NoSQL?
+    - License costs? Switch to Cloud Native DB sucha as Aurora?
+
+- Database Types
+    - RDBMS (=SQL / OLTP): RDS, Aurora - great for joins
+    - NoSQL databa  - no joins, no SQL: DynamoDB (JSON), ElastiCache (key / value pairs), Neptune (graphs), DocumentDB (for MongoDB), Keyspace (for Apache Cassandra)
+    - Object Store: S3 (for big objects) / Glacier (for backups / archives)
+    - Data Warehouse (=SQL Analytics / BI): Redshift (OLAP), Athena, EMR
+    - Search: OpenSearch (JSON) - free text, unstructured searches
+    - Graphs: Amazon Neptune - displays relationships between data
+    - Ledger: Amazon Quantum Ledger Database
+    - Time series: Amazon Timestream
 
 
 
@@ -2764,6 +2838,95 @@
             - Restore from a snapshot: the database will have schemas and data ready
         - EBS Volumes:
             - Restore from a snapshot: the disk will already be formatted and have data
+
+
+## Serverless Solution Architectures
+- MyTodoList App
+    - Requirements:
+        - Expose as REST API with HTTPS
+        - Serverless architecture
+        - Users should be able to directly interact with their own folder in S3
+        - Users should authenticate through a managed serverless service
+        - The users can write and read to-dos, but they mostly read them
+        - The database should scale, and have some high read throughput
+
+    - REST API layer
+    ![API layer](images/img75.png)
+    - Giving users access to S3
+    ![S3 access](images/img76.png)
+    - high read throughput and caching
+    ![high read throughput and caching](images/img77.png)
+
+    - Serverless REST API: HTTPS, API Gateway, Lambda, DynamoDB
+    - Using Cognito to generate temporary credentials with STS to access S3 bucket with restricted policy. App users can directly access AWS resources this way. Pattern can be applied to DynamoDB, Lambda...
+    - Caching the reads on DynamoDB using DAX
+    - Caching the REST requests at the API Gateway level
+    - Security for authentication and authorization with Cognito, STS
+
+- Serverless hosted website: MybBlog.com
+    - Requirements
+        - This website should scale globally
+        - Globs are rarely writte, but often read
+        - Some of the website is purely static files, the rest is a dynamic REST API
+        - Caching must be implement where possible
+        - Any new users that subscribes should receive a welcome email
+        - Any photo uploaded to the blog should have a thimbnail generated
+    
+    - Static content, globally, securely
+    ![Static content, globally, securely](images/img78.png)
+    - Public serverless REST API with DynamoDB Global Tables
+    ![Public serverless REST API with DynamoDB Global Tables](images/img79.png)
+    - New user email flow
+    ![New user email flow](images/img80.png)
+    - Thumbnail Generation flow
+    ![Thumbnail Generation flow](images/img81.png)
+
+    - Static content being distributed using CloudFront with S3
+    - The REST API was serverless, didn't need Cognito because public
+    - Leveraged a Global DynamoDB table to serve the data globally
+    - Enabled DynamoDB streams to trigger a Lambda function
+    - The lambda function had an IAM role wich could use SES
+
+- Micro Services architecture
+    - Many services interact with each other derctly using a REST API
+    - Each architecture for each micro service may vary in form and shape
+
+    - Micro Service Environment
+    ![Micro Service Environment](images/img82.png)
+
+    - About Micro Services
+        - Synchronous pattern: API Gateway, Load Balancers
+        - Asynchronous patterns: SQS, Kinesis, SNS, Lambda triggers (S3)
+        - Challenges with micro-services:
+            - repeated overhead for creating each new microservice
+            - issues with optimizing server density/utilization
+            - complexity of running multiple versions of multiple microservices simultaneously
+            - proliferation of client-side code requirements to integrate with many separate services
+        - Some of the challenges are solved by Serverless patterns:
+            - API Gateway, Lambda sacle automatically and you pay per usage
+            - You can easily clone API, reproduce environments
+            - Generated client SDK through Swagger integration for the API Gateway
+        - You are free to design each micro-service the way you want
+
+- Software updates offloading
+    - We have an application running on EC2, that distributes softwares updates once in a while
+    - When a new software update is out, we get a lot of request and the content is distributed in mass over the network, IT's very costly
+    - How to optimize the cost and CPU?
+
+    - Current state
+    ![Current state](images/img83.png)
+
+    - Input CloudFront
+    ![Input CloudFront](images/img84.png)
+
+    - Cloud front request no changes on the architecture
+    - It will cache software update files at the edge
+    - Software update files are not dynamic, they're static
+    - The EC2 instances aren't serverless
+    - But CloudFront is, and will scale for us
+    - The ASG will not sacle as much, as we'll save tremendously in EC2
+    - It'll also save in availability, network bandwidth cost, etc
+    - Easy way to make an existing application more scalable and cheaper
 
 
 
