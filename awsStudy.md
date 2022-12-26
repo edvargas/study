@@ -113,7 +113,7 @@
             - In-memory databases optmized for BI(business intalligence)
             - Applications performing real-time processing of big unstructured date
         - Storage Optimized: great for storage-intesive tasks tha require high, sequential read and write access to large data sets on local storage, use cases:
-            - High frequency online transaction rocessing (OLTP) systems
+            - High frequency online transaction processing (OLTP) systems
             - Relational and NoSQL databases
             - Cache for in-memory databases (for example, Redis)
             - Data warehousing applications
@@ -2760,6 +2760,116 @@
     - Graphs: Amazon Neptune - displays relationships between data
     - Ledger: Amazon Quantum Ledger Database
     - Time series: Amazon Timestream
+
+## AWS DocumentDB
+- DocumentDB is the same for MongoDB (which is a NoSQL database)
+- MongDB is used to store, query, and index JSON data
+- Similar "deployment concepts" as Aurora
+- Fully Managed, highly available with replication across 3 AZ
+- DocumentDB storage automatically grows in increments of 10GB, up to 64TB
+- Automatically scaled to workloads with millions of requests per seconds
+
+
+## AWS Neptune
+- Fully Fully managed graph database
+- A popular graph dataset would be a social network
+    - Users have friends
+    - Posts have comments
+    - Comments have likes from users
+    - Users share and like posts
+- Highly available across 3 AZ, with up to 15 read replicas
+- Build and run applications working with highly connected datasets - optimized for these complex ad hard queries
+- Can store up to bilions of relations and query teh graph with miliseconds latency
+- Highly available with replications across multiple AZs
+- Great for knowledge graphs (Wikipedia), fraud deletecion, recommendation engines, social networking
+
+
+## AWS Keyspaces (for Apacha Cassandra)
+- Apacha Cassandra is an open-source NoSQL distributed database
+
+- A managed Apache Cassandra-compatible database service
+- Serverless, Scalabe, highly available, fully managed by AWS
+- Automatically scale tables up/down based on the application's traffic
+- Table are replicated 3 times across multiple AZ
+- Using the Cassandra Query Language (CQL)
+- Single-digit milisecond latency at any scale, 1000s of requests per second
+- Capacity: On-demand mode or provisioned mode with auto-scaling
+- Encryption, backup, Poin-In-Time Recovery (PITR) up to 35 days
+
+- Use cases: store IoT devices info, time-series data, ...
+
+
+## AWS QLDB
+- QLDS stands for "Quantum Ledger Database""
+- A ledger is a book recording financial transactions
+- Fully Managed, Serverless, High available, Replication across 3 AZ
+- Used to review history of all the changes made to your application data over time
+-Immutable system, no entry can be removed or modified, cryptographically verifiable
+
+- 2-3x better performance than common ledger blockchain frameworks, manipulate data using SQL
+- Difference with Amazon Managed Blockchain: no decentralization component, in accordance with financial regulation rules
+
+
+## AWS Timestream
+- Fully managed, fast, sacalable, serverless time series database
+- Automatically scales up/down to adjust capacity
+- Store and analyze trillions of events per day
+- 1000s times faster & 1/10th the cost of relational datbases
+- Scheduled queries, multi-measure records, SQL compability
+- Data sotrage tiering: recent data kept in memory and historical data kept in a cost-optimized storage
+- Buil-in time series analytics functions (helps you identify patterns in your data in near real-time)
+Encryption in transit and at rest
+
+- Use cases: IoT apps, operations applications, real-time analytics, ...
+
+- Architecture use cases:
+![Amazon Timestream](images/img85.png)
+
+
+## AWS Athena
+- Serverless query service to analyse data stored in Amazon S3
+- Uses standard SQL languege to query the files (built on Presto)
+- Supports CSV, JSON, ORC, Avro, and Parquet
+- Pricing: $5.00 per TB of data scanned
+- Commonly used with Amazon Quicksight for reporting/dashboards
+
+- Use cases: Business intelligence / analytics / rereporting, analyze & query VPC Flow Logs, ELB Logs, CloudTrail trails, etc...
+- Exam Tip: analyze data in S3 using serverless SQL, use Athena
+
+- Performance Improvement
+    - Use colunmar data for cost-savings (less scan)
+        - Apache Parquet or ORC is commended
+        - Huge performance imrpovement
+        - Use Glue to convert your data your Parquet or ORC
+    - Compress data for smaller retrievals (bzip2, gzip, lz4, snappy, zlip, zstd...)
+    - Partition datasets in S3 for easy querying on virtual columns
+    ![Athena Partition datasets](images/img86.png)
+    - Use largers files (> 128 MB) to minimize overhead
+
+- Federated Query
+    - Allows you to run SQL queries across data stored in relation, non-relational, object, and custom data sources (AWS or on-premises)
+    - Uses Data Source Connectors that run on AWS Lambda to run Federated Queries (e.g., CloudWatch Logs, DynamoDB, RDS, ...)
+    - Store the results back in Amazon S3
+    ![Athena Federated Query](images/img87.png)
+
+
+## AWS Redshift
+- Redhift is based on PostgreSQL, but it's not used for OLTP (High frequency online transaction processing)
+- It's OLAP - online analytical processsing (analytics and data warehousing)
+- 10x better performance than other data warehouses, scale to PBs of data
+- Columnar storage of data (instead of row based) & parallel query engine
+- Pay as you go based on  the instances provisioned
+- Has a SQL interface for performing the queries
+- BI t ools such as Amazon Quicksight or Tableau integrate with it
+- vs Athena: faster queries / joins / aggregations thanks to indexes
+&nbsp;
+- Cluster
+    - Leader node: for query planning, result aggregation
+    - Compute node: for performing the queries, send results to leader
+    - You provision the node size in advance
+    - You can use Reserved Instances for cost saving
+    ![Redshift cluster](images/img88.png)
+    
 
 
 
