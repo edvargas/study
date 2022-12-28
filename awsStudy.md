@@ -3760,6 +3760,217 @@ Encryption in transit and at rest
     - Can assign multiple policies at a time
 
 
+## AWS Secrets Manager
+- Newer service, meant for storing secrets
+- Capability to force rotation of secrets every X days
+- Automate generation of secrets on rotation (uses Lambda)
+- Integration with Amazon RDS
+- Secrets are encrypted using KMS
+
+- Mostly meant for RDS integration
+
+- Multi-Region Secrets
+    - Replicate Secrets across multiple AWS Regions
+    - Secrets Manager keeps read replicas in sync with the primary Secret
+    - Ability to promote a read replica Secret to a standalone Secret
+    - Use cases: multi-region apps, disaster recovery strategies, multi-region DB...
+
+
+## AWS ACM - Certificate Manager
+- Easily provision, manage, and deploy TLS Certificates
+- Provide in-flight encryption for websites (HTTPS)
+- Supports both public and private TLS certificates
+- Free of charge for public TLS certificates
+- Automatic TLS certificate renewal
+- Integrations with (load TLS certificates on)
+    - Elastic Load Balancers (CLB, ALB, NLB)
+    - CloudFront Distributions
+    - APIs on API Gateway
+- Cannot use ACM with EC2 (can't be extracted)
+
+- Requesting Public Certificates
+    1. List domain names to be included in the certificate
+        - Fully Qualified Domain Name (FQDN): corp.example.com
+        - Wildcard Domain: *.example.com
+    2. Select Validations Method: DNS Validation or Email validation
+        - DNS Validations is preferred for automation purposes
+        - Email validation will send emails to contact addresses in the WHOUIS database
+        - DNS Validation will levarege a CNAME recort to DNS config (ex: Rout 53)
+    3. It will take a few hours to get verified
+    4. The Public Certificate will be enrolled for automatic renewal
+        - ACM automatically renews ACM-generated certificates 60 days before expiry
+
+- Importing Public Certificates
+    - Option to generate the cerfiticate outside of ACM and then import it
+    - No automatic renewal, must import a new certificate before expiry
+    - ACM sends daily expiration events starting 45 days prior to expiration
+        - The # of days can be configured
+        - Events are appearing in EventBridge
+    - AWS Config has a managed rule named acm-certificate-expiration-check to check for expiring certificates (configurable number of days)
+
+- Integration with ALB
+![Certificate Manage with ALB](images/img138.png)
+
+- Integration with API Gateway
+    - Create a Custom Domain Name in API Gateway
+    - Edge-Optimized (default): For global clients
+        - Requests are routed through the CloudFront Edge locations (improves latency)
+        - The API Gateway still lives in only one region
+        - The TLS Certificate must be in the same region as CLoudFront
+        - The setup CNAME or (better) A-Alias records in Route 53
+    - Regional:
+        - For clients within the same region
+        - The TLS Certificate must be imported on API Gateway, in the same region as the API Stage
+        - Then setup CNAME or (better) A-Alias record in Route 53
+    ![ACM with AGW](images/img139.png)
+
+
+## AWS WAF - Web Application Firewall
+- Protects your web application from common web exploits (Layer 7)
+- Layer 7 is HTTP (vs Layer 4 is TCP/UDP)
+
+- Deploy on:
+    - ALB
+    - API Gateway
+    - CLoudFront
+    - AppSync GraphQL API
+    - Cognito User Pool
+
+- Define Web ACL (Web Access Control List) Rules:
+    - IP set: up to 10,000 IP addresses - use multiple Rules for more IPs
+    - HTTP headers, HTTP body, or URI strings Protects from common atack - SQL injection and Cross-Site SCripting (XSS)
+    - Size constraints, geo-math (block countries)
+    - Rate-based rules (to count ocurrences of events) - for DDoS protection
+
+- Web ACL are Regional except for CLoudFront
+- A rule group is a reusable set o frules that you can add to a web ACL
+
+- Fixed IP while using WAF with a Load Balancer
+    - WAF does not supports the Network Load Balancer (Layer 4)
+    - We can use a Global Accelerator for fixed IP and WAF on the ALB
+    ![WAF with ALB](images/img140.png)
+
+
+## AWS Shield
+- Protect from DDoS attack
+- DDoS: Distributed Denial of Service - many requests at the same time
+- AWS Shield Standard:
+    - Free service that is activated for every AWS customer
+    - PRovides protection from attacks such as SYN/UDP Floods, Reflection attacks and other layer 3/layer 4 attacks
+- AWS Shield Advanced:
+    - Optional DDoS mitigation service ($3,000 per month per organization)
+    - Protect against more sophisticated attack on Amazon EC2, ELB, CloudFront, AWS Global Accelerator, and Route 53
+    - 24/7 access to AWS DDoS response team (DRP)
+    - Protect against higher fees during usage spikes due to DDoS
+    - Shield Advanced automatic application layer DDoS mitigation automatically creates, evaluates and deploys AWS WAF rules to mitigate laer 7 attacks
+
+
+## AWS Firewall Manager
+- Manage rules in all accounts of an AWS Organization
+
+- Security policy: common set of security rules
+    - WAF rules (ALB, API Gateways, CLoudFront)
+    - AWS Shield Advanced (ALB, CLB, NLB, Elastic IP, CloudFront)
+    - Security Groups for EC2, ALB and ENI resources in VPC
+    - AWS Network Firewall (VPC Level)
+    - Amazon Route 53 Resolver DNS Firewall
+    - Policies are created at the region level
+
+- Rules are applied to new resources as they are created (good for compliance) across all and future accounts in your Organization
+
+- WAF vs. Firewall Manager vs. Shield
+    - WAF, Shield and Firewall Manager are used together for comprehensive protection
+    - Define your Web ACL (Access Control List) rules in WAF
+    - For granular protection of your resources, WAF alone is the correct choise
+    - If you want to use AWS WAF across accounts, accelerate WAF configuration, automate the protection of new resources, use Firewall Manager with AWS WAF
+    - Shield Advanced adds additional features on top of AWS WAF, such as dedicated support from the Shield Response Team (SRT) and advanced reporting
+    - If you're prone to frequent DDoS attacks, consider purchasing Shield Advanced
+
+
+## AWS GuardDuty
+- Intelligent Threat discovery to Protect AWS Account
+- Uses Machine Learing algorithms, anomaly detections, 3rs party data
+- One click to enable (30 days trial), no need to install software
+- Input data inclues:
+    - CloudTrail Events Logs - unusual API calls, unauthorized deployments
+        - CloudTrail Management Events - create VPC subnet, create trail, ...
+        - CloudTrail S3 Data Events - get object, list objects, delete object, ...
+    - VPC Flows Logs - unusual internal traffic, unusual IP address
+    - DNS Logs - compromised EC2 instances sending encoded data within DNS queries
+    - Kubernetes Audit Logs - suspicious activities and potential EKS cluster compromises
+- Can setup ClodWatch Event rules to be notified in case of findings
+- CLoudWatch Events rules can target AWS Lambda or SNS
+- Can protect against CryptoCurrency attacks (has a dedicated "finding" for it)
+![GuardDuty](images/img142.png)
+
+
+## Amazon Inspector
+- Automated Security Assessments
+
+- For EC2 instances
+    - Leveraging the AWS System Manager (SSM) agent
+    - ANalyze against unintended network accessibility
+    - Analyze the running OS against known vulnerabilities
+- For Container Images push to Amazon ECR
+    - Assessment of Container Images as they are pushed
+- For Lambda Functions
+    - Identifies software vulnerabilities in functions code and package dependencies
+    - Assessment of functions as they are deployed
+
+- Reporting & integration with AWS Security Hub
+- Send findings to Amazon Event Bridge
+
+- What does Amazon Inspector evaluete?
+    - Remember: only for EC2 instances, Container Images & Lambda functions
+
+    - Continuous scanning of the infrastructure, only when needed
+
+    - Package vulnerabilities (EC2, ECR & Lambda) - database of CVE
+    - Network reachability (EC2)
+
+    - A risk score is associated with all vulnerabilities for prioritization
+
+
+## Amazon Macie
+- Amazon Macie is a fully managed data security and data privacy service that uses machine learning and pattern matching to discover and protect your sensitive data in AWS
+- Macie helps identify and alert you to sensitive data, sucha as personally identifiable information (PII)
+![Amazon Macie](images/img143.png)
+
+
+## AWS VPC
+- All new AWS accounts have a default VPC
+- New EC2 instances are launched into the default VPC if no subnet is specified
+- Default VPC has Internet connectivity and all EC2 instances inside it have public IPv4 addresses
+- We algo get a public and a private IPv4 DNS names
+
+- VPC in AWS - IPv4
+- You can have multiple VPCs in AWS region (max. 5 per region - soft limit)
+    - Min. size is /28 (16 addresses)
+    - Max. size is /16 (65536)
+- Because VPC is private, only the Private IPv4 ranges are allowed:
+    - 10.0.0.0 - 10.255.255.255 (10.0.0.0/8)
+    - 172.16.0.0 - 172.31.255.255 (172.16.0.0/12)
+    - 192.168.0.0 - 192.168.255.255 (192.168.0.0/16)
+
+- Your VPC CIDR should NOT overlap with your other networks (e.g., corporate)
+
+- Subnet
+    ![VPC Subnet](images/img145.png)
+    - AWS reserves 5 IP adresses (first 4 & last 1) in each subnet
+    - These 5 IP addresses are not available for use and can't be assigned to and EC2 instance
+    - Example: if CIDR block 10.0.0.0/24, then reserved IP addresses are:
+        - 10.0.0.0 - Network Address
+        - 10.0.0.1 - reserved by AWS for the VPC router
+        - 10.0.0.2 - reserved by AWS for mapping to Amazon-provided DNS
+        - 10.0.0.3 - reserved by AWS for future use
+        - 10.0.0.255 - Network Broadcast Address AWS does not support broadcast in a VPC, therefore the address is reserved
+
+    * Exam Tip, if you need 29 IP adddresses for EC2 instance:
+        - You can't choose a subnet of size /27 (32 IP addresses, 32 - 5 = 27 < 29)
+        - You need to choose a subnet of size /26 (64 IP addresses 64 - 5 = 59 > 29)
+
+
+
 ## Classic Solutions Architecture Examples
 - These solutions architectures are some example how to all the technologies below work togheter
 
@@ -3946,6 +4157,56 @@ Encryption in transit and at rest
     - The reporting bucket contains analyzed data and can be used by reporting tool such as AWS QuickSight, Redshift, etc...
 
 
+## DDoS Protection Best Pratices Resiliency
+![Best Practices for DDoS Resiliency Edge Location Mitigation](images/img141.png)
+
+- Edge Location  Mitigation (BP1, BP3) 
+    - BP = Best Pratices
+
+    - BP1 - CloudFront
+        - Web Application delivery at the edge
+        - Protect from DDoS common Attacks (SYN floods, UDP reflection...)
+
+    - BP1 - Global Accelerator
+        - Access your application from the edge
+        - Integration with Shield for DDoS protection
+        - Helpful if your backend is not compatible with CloudFront
+
+    - BP3 - Route 53
+        - Domain Name Resolution at the edge
+        - DDoS protection mechanism
+
+- DDoS mitigation
+    - Infrastructure layer defence (BP1, BP3, BP6)
+        - Protect Amazon EC2 against high traffic
+        - That includes using Global Accelerator , Route 53, CloudFront, Elastic Load Balancing
+    - Amazon EC2 With Auto Scaling (BP7)
+        -    Helps scale in case of sudden traffic surges including a flassh crowd or a DDoS attack
+    - Elastic Load Balancing (BP6)
+        - Elastic Load Balancing scales with the traffic increases and will distribute the traffic to many EC2 instances
+
+- Application Layer Defense
+    - Detec and filter malicious web requests (BP1, BP2)
+        - CloudFront cache static content and serve it from edge locations, protecting your backend
+        - AWS WAF is used on top of CloudFront and Applicatio Load Balancer to filter and block requests based on request signatures
+        - WAF rate-based rules can automatically block the IPs of bad actors
+        - Use managed rules on WAF to block attacks based on IP reputation, or block anonymous lps
+        - CloudFront can block specific geopgraphies
+    - Shield Advanced (BP1, BP2, BP6)
+        - Shield Advanced automatic application layer DDoS mitigation automatically creates, evaluate and deploys AWS WAF rules to mitigate layer 7 attacks
+
+- Attack surface reduction
+    - Obfuscating AWS resources (BP1, BP4, BP6)
+        - Using CLoudFront, API Gateway, Elastic Load Balancing to hide your backend resources (Lambda functions, EC2 instances)
+    - Security groups and Network ACLs (BP5)
+        - Use security groups and NACLs to filter traffic base on specific IP at the subnet or ENI-level
+        - Elastic IP are protected by AWS Shield Advanced
+    - Protecting API endpoint (BP4)
+        - Hide EC2, Lambda, elsewhere
+        - Edge-optimized mode, or CloudFront + regional mode (more control for DDoS)
+        - WAF + API Gateway: burst limits, headers filtering, use API keys
+
+
 
 ## Annotations and doubts
 IOPS - I/O operations per second
@@ -4027,3 +4288,34 @@ BYOL - Bring Your Own License?
     - The server should not be able to decrypt the data
     - Could leverage Envelop Encryption
     ![Client side encryption](images/img131.png)
+
+
+## CIDR
+- IPv4
+    - Classless Inter-Domain Routing - a method for allocating IP addresses
+    - Used in Security Groups rules and AWS networking in general
+
+    - They help to define an IP address range:
+        - We've seen WW.XX.YY.ZZ/32 => one IP
+        - We've seen 0.0.0.0/0 => all IPs
+        - But we can define 192.168.0.0/26 => 192.168.0.0 - 192.168.0.63 (64 IP addresses)
+
+- A CIDR consist of two components
+- Base IP
+    - Represents an IP contained in the range
+    - Example: 10.0.0.0, 192,168.0.0,...
+- Subnet Mask
+    - Defines how many bits can change in the IP
+    - Example: /0, /24, /32
+    -  Can take two forms:
+        - /8 = 255.0.0.0
+        - /16 = 255.255.0.0
+        - /24 = 255.255.255.0
+        - /32 = 255.255.255.255
+
+- Subnet Mask
+    - The Subnet Mask basically allows part of the underlying IP to get additional next values from the base IP
+    ![Subnet Mask](images/img144.png)
+
+- Public vc Private IP (IPv4)
+    - The inernet Assigned Numbers Authority (IANA) established certain blocks of IPv4 addresses for the use of private (LAN) and public (Internet) addresses
