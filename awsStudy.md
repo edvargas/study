@@ -4334,6 +4334,472 @@ Encryption in transit and at rest
 - Send logs of rules matches to Amazon S3, CloudWatch Logs, Kinesis Data Firehose
 
 
+## Disaster Recovery Overview
+- Any event that has a negative impact on a company's busienss continuity or finance is a disaster
+- Disaster recovey (DR) is about preparing for and recovering from a disaster
+- What kind of disaster recovery?
+    - On-premise => On-premise: traditional DR, and very expensive
+    - On-premise => AWS Cloud: hybrid recovery
+    - AWS Cloud Region A => AWS Cloud Region B
+- Need to define two terms:
+    - RPO: Recovery Point Objective
+    - RTO: Recovery Time Objective
+
+- RPO and RTO
+    ![ROT and RTO](images/img184.png)
+
+- Disaster Recovery Strategies
+    - Backup and Restore
+    - Pilot Light
+    - Warm Standby
+    - Hot Site / Multi Site Approach
+    ![DR strategies](images/img185.png)
+
+    - Backup and Restore (High RPO)
+        - Very easy
+        - Not too expensive
+        - High RPO and RTO
+        ![DR Backup and Restore](images/img186.png)
+
+    - Pilot Light
+        - A small version of the app is always running in the cloud
+        - Useful for the critical core (pilot light)
+        - Very similar to Backup and Restore
+        - Faster than Backup and Restore as critical systems are already up
+        - Very popular choise
+        - Only for critical systems
+        ![DR Pilot Light](images/img187.png)
+
+    - Warm Standby
+        - Full system is up and running, but at minimum size
+        - Upon disaster, we can scale to production load
+        - More costly
+        - Decrease RPO and RTO
+        ![DR Warm Standby](images/img188.png)
+
+    - Multi Site / Hot Site Aproach
+        - Very low RTO (minutes or seconds) - very expensive
+        - Full Production Scale is running AWS and On Premise
+        ![DR Multi Site](images/img189.png)
+        ![DR Multi Site full Cloud](images/img190.png)
+
+- Disaster Recovery Tips
+    - Backup
+        - EBS Snapshots, RDS automated backups / Snapshots, etc...
+        - Regular pushes to S3 / S3 IA / Glacier, Lifecycle Policy, Cross Region Replication
+        - From On-Premise: Snowball or Storage Gateway
+    - High Availability
+        - Use Route53 to migrate DNS over from Region to Region
+        - RDS Multi-AZ, ElastiCache Multi-AZ, EFS, S3
+        - Site to Site VPN as a recovery from Direct Connect
+    - Replication
+        - RDS Replication (Cross Region), AWS Aurora + Global Databases
+        - Database replication from on-premise to RDS
+        - Storage Gateway
+    - Automation
+        - CloudFromation / Elastic Beanstalk to re-create a whole new environment
+        - Recover / Reboot EC2 instances with CloudWatch if alarms fail
+        - AWS Lambda functions 
+         for customized automations
+    - Chaos
+        - Netflix has a "simian-army" randomly termination EC2
+
+
+## DMS - Database Migration Service
+- Quickly and securely migrate databases to AWS, resilient, self healing
+- The source database remains available during the migration
+- Supports:
+    - Homogeneous migrations: ex Oracle to Oracle
+    - Hererogeneous mgirations: ex Microsoft SQL Server to Aurora
+- Continuous Data Replication using CDC
+- You must create and EC2 instance to perform replication tasks
+
+- DMS Sources and Tagers
+    - Sources:
+        - On-Premise and EC2 instances databases: Oracle, MS SQL Server, MySQL, MariaDB, PostgreSQL, MongoDB, SAP, DB2
+        - Azure: Azure SQL Database
+        - Amazon RDS: all including Aurora
+        - Amazon S3
+    - Targets:
+        - On-Premise and EC2 instances databases: Oracle, MSSQL Server, MySQL, MariaDB, PostgreSQL, SAP
+        - Amazon RDS
+        - Amazon Redshift
+        - Amazon DynamoDB
+        - Amazon S3
+        - SlasticSeach Service
+        - Kinesis Data Streams
+        - DocumentDB
+
+- AWS Schema Conversion Tool (SCT)
+    - Convert your Databse's Schema from one engine to another
+    - Example OLTP: (SQL Server or Oracle) to MySQL, PostgreSQL, Aurora
+    - Example OLAP( Teradata or Oracle) to Amazon Redshift
+    - You do not need to use SCT if you are migration the same DB engine
+        - Ex: On-Premise PostgreSQL => RDS PostgreSQL
+        - The DB engine is still PostgreSQL (RDS is the platform)
+
+- DMS - Continuous Replications
+![DMS continuous Replications](images/img191.png)
+
+- RDS & Aurora MySQL Migrations
+    - RDS MySQL to Aurora MySQL
+        - Option 1: DB Snapshots from RDS MySQL restored as MySQL AUrora DB
+        - Option 2: Create an Aurora Read Replica from you RDS MySQL, and when the replication lag is 0, promote it as its own DB cluster (can take time and cost $)
+    - External MySQL to Aurora MySQL
+        - Option 1:
+            - Use PErcona XtraBackup to create a file backup in Amazon S3
+            - Create an Aurora MySQL DB from Amazon S3
+        - Option 2:
+            - Create an Aurora MySQL DB
+            - Use the mysqldump utility to migrate MySQL into AUrora (slower than S3 method)
+        - Use DMS if both databases are up and running
+    ![RDS & Aurora MySQL Migrations](images/img192.png)
+
+- RDS & Ayrora PostgreSQL Migrations
+    - RDS PostgreSQL to Aurora PostgreSQL
+        - Option 1: DB Snapshots from RDS POstgreSQL restored as PostgreSQL Aurora DB
+        - Option 2: Create an Aurora Read Replica from your RDS PostgreSQL, and when the replication lag is 0, promote it as its own DB cluster (can take time and cost $)
+    - External PostgreSQL to Aurora PostgreSQL
+        - Create a backup and put it in Amazon S3
+        - Import it using the aws_s3 Aurora extension
+        - Use DMS if both databases are up and r unning
+    ![RDS & Ayrora PostgreSQL Migrations](images/img193.png)
+
+
+## On-Premise strategy with AWS
+- - Ability to download Amazon Linux 2 AMI as a VM (.iso format)
+    - VMWare, KVM, VirtualBox (Oracle VM), Microsoft Hyper-V
+- VM import / Export
+    - Migrate existing applications into EC2
+    - Create a DR repository strategy for your on-premise VMs
+    - Can export back the VMs from EC2 to on-premise
+- AWS Application Discovery Service
+    - Gather information about your -on-premise servers to plan a migration
+    - Server utilization and dependency mappings
+    - Track with AWS Migration Hub
+- AWS Database Migration Service (DMS)
+    - replicatie On-premise => AWS, AWS => AWS, AWS => On-premise
+    - Works with various database technologies (Oracle, MySQL, DynamoDB, etc...)
+- AWS Server Migration Service (SMS)
+    - Incremental replication of on-premise live servers to AWS
+
+
+## AWS Backup
+- Fully managed service
+- Centrally manage and automate backups across AWS services
+- No need to create custom script and manual processes
+- Supported services:
+    - Amazon EC2 / Amazon EBS
+    - Amazon S3
+    - Amazon RDS (all DBs engines) / Amazon Aurora / Amazon DynamoDB
+    - Amazon DocumentDB / Amazon Neptune
+- Supports cross-region backups
+- Supports cross-account backups
+
+- Supports PITR for supported services
+- On-Demand and schedules backups
+- Tag-based backups policies
+- Your create backup policies known as Backup Plans
+    - Backup frequency (every 12 hours, daily, weekly, monthly, cron expression)
+    - Backup window
+    - Transition to Cold Storage (Never, Days, Weeks, Months, Years)
+    - Retention Period (Always, Days, Weeks, Months, Years)
+
+- AWS Backup Vault Lock
+    - Enforce a WORM (Write Once Read Many) state for all the backups that you store in your AWS Backup Vault
+    - Additional layer of defence to protect your backupus against:
+        - Inadvertent or malicious delete operations
+        - Updates that shorten or alter retention periods
+    
+    - Even the root user cannot delete backups
+
+
+## AWS Application Discovery Service (MGN)
+- Plan migration projects by gathering information about on-premises data centers
+- Server utilization data and dependency mapping are important for migrations
+
+- Agentless Discovery (AWS Agentless Discovery Connector)
+    - VM inventory, configuration, and perfoemance history such as CPU, memory, and disk usage
+- Agent-based Discovery (AWS Application Discovery Agent)
+    - System configuration, system performance, running processes, and detail of the network connections between systems
+
+- Resulting data can be viewed within AWS Migration Hub
+
+- The "AWS evolution" of CloudEndure Migration, replacing AWS Server Migration Service (SMS)
+- Lift-and-shift (rehost) solution which simplify migrating applications to AWS
+- Converts your physical, virtual, and cloud-based servers to run natively on AWS
+- Supports wide range of platforms, OSs, and databases
+- Minimal downtime, reduced costst
+![AWS MGN](images/img194.png)
+
+
+## Transferring large amount of data into AWS
+- Example: transfer 200TB of data in the cloud. We have a 100 Mbps internet connection
+- Over the internet / Site-to-Site VPN:
+    - Immediate to setup
+    - Will take 200(TB)*1000(GB)*1000(MB)*8(Mb)/100Mbps = 16,000,000s = 185d
+- Over direct connect 1 Gbps:
+    - Long for the one-time setup (over a month)
+    - Will take 200(TB)*1000(GB)*1000(MB)*8(Mb)/1Gbps = 1,600,000s = 18,5d
+- Over Snowball:
+    - Will take 2 to 3 snowballs in parallel
+    - Take about 1 week for the end-to-end transfer
+    - Can be combined with DMS
+- For on-going replication / transfers: Site-to-Site VPN or DX DMS or DataSync
+
+
+## VMware Cloud on AWS
+- Some customers use VMware Cloud to manage their on-premises Data Center
+- They want to extend the Data center capacity to AWS, but keep using the VMware Cloud software
+- ... Enter VMware Cloud on AWS
+
+- Use cases:
+    - Migrate your VMware vShere-based workloads to AWS
+    - Run your produtcion workloads across VMware vShere-based private, public, and hybrid cloud environments
+        
+
+## Event Processing in AWS
+- Lambda, SNS & SQS
+![Lambda, SNS & SQS](images/img195.png)
+
+- Fan Out Pattern: deliver to multiple SQS
+![Fan Out Pattern]()
+
+- S3 Event Notifications
+    - S3:ObjectCreated, S3:ObjectRemoved, S3:ObjectRestore, S3:Replication...
+    - Use case: generate thumbnails of images uploadaded to S3
+    - Can create as many "S3 events" as desired
+    - S3 envet notifications typically deliver events in seconds but can sometimes take a minute or longer
+![S3 Event Notifications](images/img197.png)
+
+- S3 Event Notifications with Amazon EventBridge
+    - Advanced filtering options with JSON rules
+    - Multiple Destinations
+    - Event Bridge Capabilities
+    ![S3 Event Notifications with Amazon EventBridge](images/img198.png)
+
+- Amazon EventBridge - Intercept API Calls
+![Amazon EventBridge - Intercept API Calls](images/img199.png)
+
+
+## Caching Strategies
+![Caching Strategies](images/img200.png)
+
+
+## High Performance Computing (HPC)
+- The cloud is the perfect place to perform HPC
+- You can create a very high number of resources in no time
+- You can speed up time to results by adding more resources
+- Yo ucan pay only for the systems you have used
+- Perform genomics, computational chemistry, financial risk modeling, weather prediction, machine learning, deep learning, autonomous driving
+
+- Data Management & Transfer
+    - AWS Direct Connect:
+        - Move GB/s of data to the cloud, over a private secure network
+    - Snowball & Snowmobile
+        - Move PB of data to the cloud
+    - AWS DataSync
+        - Move large amount of data between on-premise and S3, EFS, FSx for Windows
+    
+- Compute and Networking
+    - EC2 Instances:
+        - CPU optimized, GPU optimized
+        - Spot Instances / Spot Fleets for cost savings + Auto Scaling
+    - EC2 Placement Groups: Cluster for good network performance
+    - EC2 Enhanced Networking (SR-IOV)
+        - Higher bandwidth, higher PPs (packet per second), lower latency
+        - Option 1: Elastic Network Adapter (ENA) up to 100 Gbps
+        - Option 2: Intel 82599 VFup to 10Gbps - LEGACY
+
+    - Elastic Fabric Adapter (EFA)
+        - Improved ENA for HPC, Only works for Linux
+        - Greate for inter-node communications, tightly coupled workloads
+        - Leverages Message Passing Interface (MPI) standard
+        - Bypasses the underlying Linux OS to provide low-latency, reliable transport
+
+- Storage
+    - Instance-attached storage:
+        - EBS: scale up to 256,000 IOPS with io2 Block Express
+        - Instance Store: scale to millions of IOPS, linked to EC2 instance, low latency
+    - Network storage:
+        - Amazon S3: large blob, not a file system
+        - Amazon EFS: scale IOPS based on total size, or use provisioned IOPS
+        - Amazon FSx for Lustre:
+            - HPC optimized distributed file system, millios of IOPS
+            - Backed by S3
+    
+- Automation and Orchestration
+    - AWS Batch
+        - AWS Batch supports multi-node parallel jobs, which enables you to run single jobs that span multiple EC2 instances
+        - Easily schedule jobs and launch EC2 instances accordingly
+    
+    - AWS ParallelCluster
+        - Open-source cluster management tool to deploy HPC on AWS
+        - Configure with text files
+        - Automate creation of VPC, Subnet, cluster type and instance types
+        - Ability to enable EFA on the cluster (improves network performance)
+
+- Creating a highly available EC2 instance
+![Highly available EC2 instance](images/img201.png)
+
+- Creating a highly available EC2 instance With an ASG
+![Highly available EC2 instance With an ASG](images/img202.png)
+
+- Creating a highly available EC2 instance With an ASG + EBS
+![Highly available EC2 instance With an ASG + EBS](images/img203.png)
+
+
+## AWS CloudFormation
+- CloudFormation is a declarative way of outlining your AWS Infrastructure, for any resources (most of them are supported)
+- For example, within a CloudFormormation template, you say:
+    - I want a security gorup
+    - I want two EC2 instances using this security group
+    - I want an S3 bucket
+    - I wnat a load balancer (ELB) in front of these machines
+
+- Then CloudFormation creates those for you, in the right order, with the exact configuration that you specify
+
+- Benefits of AWS CloudFormation
+    - Infra as code
+        - No resources are manually created, wich is excellent for control
+        - Changes to the infra are reviewed through corde
+    - Cost
+        - Each resources within the stack is tagged with an identifier so you can easily see how much a stack cost you
+        - You can estimate the cost of your resources using the CloudFormation template
+        - Savings strategy: In Dev, you could automation deletion of templates at 5 PM and recreated at 8 AM, safely
+    - Productivity
+        - Ability to destroy and re-create an infrastructure on the cloud on the fly
+        - Automated generation of Diagram for your templates
+        - Declarative programming (no need to figure out ordering and orchestration)
+    - Don't re-invent the wheel
+        - Leverage existing templates on the web
+        - Leverage the documentation
+    - Supports almost all AWS resources:
+
+- CloudFormation Stack Designer
+    - Example: WordPress CloudFormation Stack
+    ![Wordpress CloudFormation stack](images/img204.png)
+
+
+## Amazon Simple Email Services (Amazon SES)
+- Fully managed service to send emails securely, globally and at scale
+- Allows inbound/outbound emails
+- Reputation dashboard, performance insights, anti-spam feedback
+- Provides statistcs such as email deliveries, bounces, feedback loop results, email open
+- Supports DomainKeys Identified Mail (DKIM) and Sender Policy Framework (SPF)
+- Flexible IP deployment: shared, dedicated, and customer-owned IPs
+- Send emails using your application using AWS Console, APIs, or SMTP
+
+- Use cases: transactional, marketing and bulk email communications
+
+
+## Amazon PinPOint
+- Scalable 2-way (outbound/inbound) marketing communications service
+- Supports email, SMS, push, voice, and in-app messaging
+- Ability to segment and personalize messages with the right content to customers
+- Possibility to receive replies
+- Scales to billions of messages per day
+- Use cases: run campaigns by sending marketing, bulk, transactional SMS messages
+- Versus SNS or SES
+    - In SNS & SES you managed each message's audience, contanten, and delivery schedule
+    - In Amazon Pinpoint, you create messages templates, delivery schedules, highly-targeted segments, and full campigns
+
+
+## Systems Manager
+- SSM Session Manager
+    - Allows you to start a secure shell on your EC2 and on-[remises servers
+    - No SSH access, bastion hosts, or SSH keys needed
+    - No port 22 needed (better security)
+    - Supports Linux, macOS, and Windows
+    - Send sessiong log data to S3 or CloudWatch Logs
+
+- Run command
+    - Execute a documente (= script) or just run a command
+    - Run command across multiple instances (using resource groups)
+    - No need for SSh
+    - Command Output can be shown in the AWS Console, sent to S3 bucket or CloudWatch Logs
+    - Send notifications to SNS about command status (In progress, Success, Failed, ...)
+    - Integrated with IAM & CloudTrail
+    - Can be invoked using EventBridge
+
+- Patch Manager
+    - Automates the process of patching managed instnaces
+    - OS updates, applications updates, security updates
+    - Supports EC2 instances and on-premises servers
+    - Supports Linux, macOS, and Windows
+    - Patch on-demand or on a schedule using Maintenanc Windows
+    - Scan instances and generate patch compliance report (missing patches)
+
+- Maintenance Windows
+    - Define a schedule for when perform actions on your instances
+    - Example: OS patching, updating drivers, installing software, ...
+    - Maintenance Window contains
+        - Schedule
+        - Duration
+        - Set of registered instances
+        - Set of regirtered tasks
+
+- Automation
+    - Simplifies common maintenance and deployment tasks of EC2 instances and other AWS resources
+    - Examples: restart instances, create an AMI, EBS snapshot
+    - Automation Runbook - SSM Documents to define actions performed on your EC2 instances or AWS resources (pre-defined or custom)
+    - Can be triggered using:
+        - Manually using AWS Console, AWS CLI or SDK
+        - Amazon EventBridge
+        - On a schedule using Maintenance Windows
+        - By AWS Config for rules remediations
+
+
+## Cost Explorer
+- Visualize, understand, and manage your AWS costs and usage over time
+- Create custom reports that analyze cost and usage data
+- Analyze your data at a high level: total costs and usage across all accounts
+- Or Monthly, hourly, resource level granularity
+- Choose an optimal Savings Plan
+- Forecast usage up to 12 months based on previous usage
+
+
+## Amazon Elastic Transcoder
+- Elastic Transcoder is used to convert media files stored in S3 into media files in the formats required by consumer playback devices (phones etc...)
+- Benefits:
+    - Easy to use
+    - Highly scalable - can handle large volumes of media files and large file sizes
+    - Cost effective - duration-based pricing model
+    - Fully managed & secure, pay for what you use
+
+
+## AWS Batch
+- Fully managed batch processing at any scale
+- Efficiently run 100,000s of computing batch jobs on AWS
+- A "batch" job is a job with a start and an end (opposed to continuous)
+- Batch will dynamically launc EC2 instances or Spot Instances
+- AWS Batch provisions the right amount of compute / memory
+- You submit or schedule batch jobs and AWS Batch does the rest!
+- Batch jobs are defined as Docke images and run on ECS
+- Helpful for cost optimizations and focusing less on the infrastructure
+
+- Batch vs Lambda
+    - Lambda:
+        - Time limit
+        - Limited runtimes
+        - Limited temporrary disk space
+        - Serverless
+    - Batch:
+        - No time limit
+        - Any runtime as long as it's packaged as a docker image
+        - Rely on EBS / instance store for disk space
+        - Relies on EC2 (can be managed by AWS)
+
+
+## Amazon AppFlow
+- Fully managed integration service that enables you to securely transfer data between Software-as-a-Service (SaaS) applications and AWD
+- Sources: Salesfor, SAP, Zendesk, Slack, and ServiceNow
+- Destinations: AWS services like Amazon S3, Amazon Redshift or non-AWS such as SnowFlake and Salesforce
+- Frequency: on a aschedule, in response to events, or on demand
+- Data transformation capabilities like filtering and validation
+- Ecrypted over the public internet or privately over AWS PrivateLink
+- Don't spend time writing the integrations and leverage APIs immediately
+
 
 ## Classic Solutions Architecture Examples
 - These solutions architectures are some example how to all the technologies below work togheter
