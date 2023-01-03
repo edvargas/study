@@ -70,7 +70,7 @@
     - Cross account:
         - attaching a resource-based policy to a resource (example: s3 bucket policy)
         - OR using a role as a proxy
-        ![IAM Roles vs Resource based policies](images/img118.png)
+        ![IAM Roles vs Resource based policies](resources/img118.png)
     
     - When you assume a role (user, application or service), you give up your original permissions and take the permissions assigned to the role
     - When using a resource-based policy, the principal doen't have to give up his permissions
@@ -87,7 +87,7 @@
     - Advanced feature to use a managed policy to set the maximum permissions an IAM entity can get
 
     - Can be used in combination of AWS Organizations SCP
-    ![IAM Permission Boundaries](images/img119.png)
+    ![IAM Permission Boundaries](resources/img119.png)
 
     - Use cases:
         - Delgate responsabilities to non administrators within their permission boundaries, for example create new IAM user
@@ -95,7 +95,7 @@
         - Useful to restrict one specific user (instead of a whole account using Organizations & SCP)
 
 - Policy Evaluation Logic
-![IAM Policy evaluation logic](images/img120.png)
+![IAM Policy evaluation logic](resources/img120.png)
 
 
 
@@ -563,7 +563,7 @@
 - Load Balancer Security Groups
     - Load Balancer has the own Securty group
     - For example, we can allow the users from anywhere access the Load Balancer, but the EC2 Instances only allow traffic comming only from the Load Balancer, because de EC2 Security Group will allow HTTP traffic only from the Load Balancer Security Group, this way linking Security Groups
-    ![Load Balancer Security Groups](images/img1.png)
+    ![Load Balancer Security Groups](resources/img1.png)
 
 - Application Load Balancer (v2) - ALB
     - Application load balancers is Layer 7 (HTTP)
@@ -651,7 +651,7 @@
 - Cross-Zone Load Balancing
     - With Cross Zone Load Balancing - each instance distributes evenly across all registered instances in all AZ
     - Without Cross Zone Load Balancing - requests are distributed in the instance of the node of the Elastic Load Balancer
-    ![Cross-Zone Load Balancing](images/img2.png)
+    ![Cross-Zone Load Balancing](resources/img2.png)
 
     - Application Load Balancer - ALB
         - Enabled by default (can be disabled at the Target Group level)
@@ -717,8 +717,8 @@
 ## AWS ASG - Auto Scaling Group
 - In real-life, the load on your websites and applications can change
 - In the cloud, yo ucan create and get rid of servers very quickly
-![ASG + ELB](images/img4.png)
-![AWS ASG](images/img3.png)
+![ASG + ELB](resources/img4.png)
+![AWS ASG](resources/img3.png)
 
 - The goal of an Auto Scaling Group is to:
     - Scale out (add EC2 instances) to match an increased load
@@ -885,7 +885,7 @@
         - Writer Endpoint - POinting to the master
         - Reader Endpoint - Connection Load Balancing to the read replicas
         - Replicas are Auto Scaling
-        ![Aurora DB Cluster](images/img5.png)
+        ![Aurora DB Cluster](resources/img5.png)
     
     - Features of Aurora
         - Automatic fail-over
@@ -1013,14 +1013,14 @@
     - Applications queries ElastiCache, if not available, get from RDS and store in ElastiCache
     - Helps relieve load in RDS
     - Cache must have an invalidation strategy to make sure only the most current data is used in there
-    ![ElastiCache](images/img6.png)
+    ![ElastiCache](resources/img6.png)
 
 - ElastiCache Solution Architecture - User Session Store
     - User logs into any of the application
     - The application writes the session data into ElastiCache
     - The user hits another instance of our application
     - The instance retrieves the data and the user is already logged in
-    ![ElastiCache Solution Architecture](images/img7.png)
+    ![ElastiCache Solution Architecture](resources/img7.png)
 
 - ElastiCache - Redis vs Memcached
     - Redis
@@ -1097,7 +1097,7 @@
     - You pay $0.50 per month per hosted zone
 
 - Public vs Private Hosted Zones
-![Public vs Private Hosted Zones](images/img8.png)
+![Public vs Private Hosted Zones](resources/img8.png)
 
 - Records TTL (Time To Live)
     - High TTL - e.g., 24h
@@ -1107,7 +1107,7 @@
         - More traffic on Route 53 ($$$)
         - Records are outdated for less time
         - Easy to change records
-    ![Records TTL](images/img9.png)
+    ![Records TTL](resources/img9.png)
     
     - Except for Alias records, TTL is mandatory for each DNS record
 
@@ -1199,7 +1199,7 @@
         - To change the size of the geographic region, specify bias values:
             - To expand (1 to 99) - more traffic to the resource
             - To shrink (-1 to -99) - less traffic to the resource
-        ![Route 53 Geoproximity](images/img10.png)
+        ![Route 53 Geoproximity](resources/img10.png)
 
         - Resources can be:
             - AWS resources (specify AWS region)
@@ -1294,7 +1294,7 @@
     - Preconfigured Docker
 
 - Web Server Tier vs Worker Tier
-    ![AWS Elastic Beanstalk](images/img31.png)
+    ![AWS Elastic Beanstalk](resources/img31.png)
 
 ## AWS S3 
 - Amazon S3 is one of the main building blocks of AWS
@@ -1522,7 +1522,7 @@
     - With Requester Pays buckets, the requester instead of the bucket owner pays the cost of the request and the data download from the bucket
     - Helpful when you want to share large datasets with other accounts
     - The requester must be authenticated in AWS (cannot be anonymous)
-    ![S3 Requester Pays](images/img32.png)
+    ![S3 Requester Pays](resources/img32.png)
 
 - Event Notifications
     - Events are things shuch as: S3: S3:ObjectCreated, S3:ObjectRemoved, S3:ObjectRestore, S3:Replication...
@@ -1537,7 +1537,7 @@
         - Advanced filtering options with JSON rules (metadata, object size, name, ...)
         - Multiple Destinations - ex Step Functions, Kinesis Streams / Firehose ...
         - EventBridge Capabilities - Archive, Replay Events, Reliable delivery
-        ![Event notification](images/img33.png)
+        ![Event notification](resources/img33.png)
 
 - Baseline Performance
     - Amazon S3 automatically sacles to high request rates, latency 100-200 ms
@@ -1632,7 +1632,7 @@
 
     - Default Encryption vs. Bucke Policies
         - One way to "force encryption" is to use a bucket policy and refuse any API call to PUT and S3 object without encryption headers
-        ![Policy example](images/img34.png)
+        ![Policy example](resources/img34.png)
         - Another way is to use the "default encryption" option in S3
         * Note: Bucket POlicies are evaluated before "default encryption"
 
@@ -1705,7 +1705,7 @@
     - Each Access Point gets its own DNS and policy to limit who can access it
         - A specific IAM user / group
         - One policy per ACcess Point => Easier to manage than complex bucket policies
-    ![S3 access Points](images/img35.png)
+    ![S3 access Points](resources/img35.png)
 
     - S3 Object Lambda
         - Use AWS Lambda Function to change the object before it is retrieved by t he caller application
@@ -1738,10 +1738,10 @@
         - Any HTTP backend you want
 
     - CloudFront at a high level
-    ![CloudFront high level](images/img36.png)
+    ![CloudFront high level](resources/img36.png)
 
     - S3 as an Origin
-    ![CloudFront S3 as Origin](images/img37.png)
+    ![CloudFront S3 as Origin](resources/img37.png)
 
     - CloudFront vs S3 Cross Region Replication
         - CloudFront:
@@ -1755,7 +1755,7 @@
             - Great for dynamic content that need to be available at low-latency in few regions
 
     - ALB or EC2 as an origin
-    ![CloudFront ALB or EC2 as Origin](images/img38.png)
+    ![CloudFront ALB or EC2 as Origin](resources/img38.png)
 
 - Geo Restriction
     - You can restric who can access your distribution
@@ -1778,8 +1778,8 @@
 - Cache Invalidations
     - In case you update the back-end origin, CloudFront doesn't know about it and will only get the refreshed content after the TTL has expired
     - However, you can force an entire or partial cache refresh (thus bypassing the TTL) by performing a CloudFront Invalidation
-    - You can invalidate all files (*) or a special path (/images/*)
-    ![CloudFront cache invalidations](images/img39.png)
+    - You can invalidate all files (*) or a special path (/resources/*)
+    ![CloudFront cache invalidations](resources/img39.png)
 
 
 ## AWS Global Accelerator
@@ -1831,7 +1831,7 @@
 - Data migration with AWS Snow Family
     - AWS Snow Family: offline devices to eprform data migrations
     - If it takes more than a week to transfer over the network, use Snowball devices
-    ![Snow Family Data migration](images/img40.png)
+    ![Snow Family Data migration](resources/img40.png)
 
     - AWS Snowball Edge (for data transfers)
         - Physical ata transport solution: move TBs or PBs of data in or out of AWS
@@ -2010,26 +2010,26 @@
         - Transition to S3 Glacier using a Lifecycle Policy
         - Bucket access using IAM role for each File Gateway
         - SMB Protocol has integration with Active Directory (AD) for user authentication
-        ![S3 Storage Gateway](images/img41.png)
+        ![S3 Storage Gateway](resources/img41.png)
     - FSx File Gateway
         - Native access to Amazon FSx for Windows File Server
         - Local cache for frequently accessed data
         - Windows native compatibility (SMB, NTFS, Active Directory...)
         - Useful for group file shares and home directories
-        ![FSx Storage Gateway](images/img42.png)
+        ![FSx Storage Gateway](resources/img42.png)
     - Volume Gateway
         - Block storage using iSCSI protocol backed by S3
         - Backed by EBS snapshots wich can help restore on-remises volumes
         - Cached volumes: low latency access to most recent data
         - Stored volumes: entire datased is on premise, scheduled backup to S3
-        ![Volume Gateway](images/img43.png)
+        ![Volume Gateway](resources/img43.png)
     - Tape Gateway
         - Some companies have backup processes using physical tapes (!)
         - With Tape Gateway, companies use the same processes but, in the cloud
         - Virtual Tape Library (VTL) backed by Amazon S3 and Glacier
         - Back up data using existing tape-based processes (and iSCSI interface)
         - Works with leading backup software vendors
-        ![Tape Gateway](images/img44.png)
+        ![Tape Gateway](resources/img44.png)
 
 - Hardware appliance
     - Using Storage Gateway means you need on-premises virtualization
@@ -2039,7 +2039,7 @@
     - Helpful for daily NFS backups in small data centers
 
 - Summerizing
-![Summerizing Volume Gateway](images/img45.png)
+![Summerizing Volume Gateway](resources/img45.png)
 
 
 ## AWS Transfer Family
@@ -2053,7 +2053,7 @@
 - Store and manage users credentials within the service
 - Integrate with existing authentication systems (Microsoft Active Directory, LDAP, Okta, Amazon Cognito, custom)
 - Usage: sharing files, public datasets, CRM, ERP, ...
-![AWS Transfer Family](images/img46.png)
+![AWS Transfer Family](resources/img46.png)
 
 
 ## AWS DataSync
@@ -2067,7 +2067,7 @@
 - Replication tasks can be scheduled hourly, daily, weekly
 - File permissions and metadata are preserved (NFS POSIX, SMB...)
 - One agend task can use 10 Gbps, can setup a bandwidth limit
-![AWS DataSync](images/img47.png)
+![AWS DataSync](resources/img47.png)
 
 
 ## Storage Comparison
@@ -2123,12 +2123,12 @@
 
 - SQS with ASG
     - SQS as a buffer to database writes
-    ![SQS as a buffer](images/img48.png)
-    ![SQS with ASG](images/img50.png)
+    ![SQS as a buffer](resources/img48.png)
+    ![SQS with ASG](resources/img50.png)
     - SQS to decouple between application tiers
 
 - SQS to decouple between application tiers
-![SQS to decouple application tiers](images/img49.png)
+![SQS to decouple application tiers](resources/img49.png)
 
 - Security
     - Encryption:
@@ -2174,7 +2174,7 @@
 - Each subscriber to the topic will get all the messages (note: new feature to filter messages)
 - Up to 12,500,000 subscriptions per topic
 - 100,000 topics limit
-![AWS SNS](images/img51.png)
+![AWS SNS](resources/img51.png)
 
 - SNS integrates with a lot of AWS services
     - Many AWS services can send data directly to SNS for notifications
@@ -2209,16 +2209,16 @@
     - Ability to add more SQS subscribers over time
     - Make sure your SQS queue access policy allows for SNS to write
     - Cross-Region Delivery : works with SQS Queues in other regions
-    ![SQS + SNS](images/img52.png)
+    ![SQS + SNS](resources/img52.png)
 
     - Application: S3 Events to multiple queues
-        - For the same combination of: event type (e.g. object create) and prefix (e.g. images/) you can only have one S3 Event Rule
+        - For the same combination of: event type (e.g. object create) and prefix (e.g. resources/) you can only have one S3 Event Rule
         - If you want to send the same S3 event to many SQS queues, use fan-out
-        ![S3 + multiple queues](images/img53.png)
+        ![S3 + multiple queues](resources/img53.png)
 
     - Application: SNS to Amazon S3 through Kinesis Data Firehose
         - SNS can send to Kinesis and therefore we can have the following solutions architecture
-        ![SNS to Amazon S3 Kinesis Firehose](images/img54.png)
+        ![SNS to Amazon S3 Kinesis Firehose](resources/img54.png)
 
 - FIFO Topic
     - First In First Out
@@ -2231,7 +2231,7 @@
 - Message Filterign
     - JSON policy used to filter messages sent to SNS topic's subscriptions
     - If a subscription doen't have a filter policy, it receives every message
-    ![Message Filtering](images/img55.png)
+    ![Message Filtering](resources/img55.png)
 
 
 ## AWS Kinesis
@@ -2247,7 +2247,7 @@
     - Consulmers:
         - Write your own: Kinesis Client Library (KCL), AWS SDK
         - Managed: AWS Lambda, Kinesis Data Firehose, Kinesis Data Analytics
-    ![AWS Kinesis](images/img56.png)
+    ![AWS Kinesis](resources/img56.png)
 
     - Capacity Modes
         - Provisioned mode:
@@ -2284,7 +2284,7 @@
     - Automatic scaling
     - No data Storage
     - Doesn't support replay capability
-    ![Kinesis Data Firehose](images/img57.png)
+    ![Kinesis Data Firehose](resources/img57.png)
 
 - Kinesis Data Analytics: analyze data streams with SQL or Apache Flink
 
@@ -2344,7 +2344,7 @@
     - EC2 Launch Type: you must provision & maintain the infrastructure (the EC2 instances)
     - Each EC2 instances must run the ECS Agent to register in the ECS Cluster
     - AWS takes care of starting / stopping containers
-    ![EC2 Launch Type](images/img58.png)
+    ![EC2 Launch Type](resources/img58.png)
 
 - Fargate Launch Type
     - Launch Docker containers on AWS
@@ -2353,7 +2353,7 @@
     - You just create task definitions
     - AWS just runs ECS Tasks for you based on the CPU / RAM you need
     - To scale, just increase the numbers of tasks, Simple - no more EC2 instances
-    ![Fargate Launch Type](images/img59.png)
+    ![Fargate Launch Type](resources/img59.png)
 
 - IAM Roles for ECS
     - EC2 Instance Profile (EC2 Launch Type only):
@@ -2366,7 +2366,7 @@
         - Allows each task to have a specific role
         - Use different roles for the different ECS Services you run
         - Task Role is defined in the task definition
-    ![IAM Roles for ECS](images/img60.png)
+    ![IAM Roles for ECS](resources/img60.png)
 
 - Load Balancer Integrations
     - Application Load Balancer supported and works for most use cases
@@ -2378,7 +2378,7 @@
     - Works for both EC2 and Fargate launch types
     - Tasks running in any AZ will share the same data in the EFS file System
     - Fargate + EFS = Serverless
-    ![EFS](images/img61.png)
+    ![EFS](resources/img61.png)
     
     - Use cases: persistent multi-AZ shared storage for your containers
     
@@ -2411,14 +2411,14 @@
             - Add EC2 Instances when you're missing capacity (CPU, RAM...)
     
     - ECS Scaling - Service CPU Usage Example
-    ![ECS Scaling](images/img62.png)
+    ![ECS Scaling](resources/img62.png)
 
 - Solution Architecture
     - ECS tasks invoked by Event Bridge
-    ![ECS + EventBrigde](images/img63.png)
+    ![ECS + EventBrigde](resources/img63.png)
     
     - SQS Queue Example
-    ![ECS + SQS](images/img64.png)
+    ![ECS + SQS](resources/img64.png)
 
 
 ## AWS ECR
@@ -2438,7 +2438,7 @@
 - EKS supports EC2 if you want to deploy worker nodes or Fargate to deploy serverless containers
 - Use case: if your company is already using Kubernetes on-premises or in another cloud, and wants to migrate to AWS using Kubernetes
 - Kubernetes is cloud-agnostic (can be used in any cloud - Azure, GCP ...)
-![AWS EKS](images/img65.png)
+![AWS EKS](resources/img65.png)
 
 - Node Types
     - Managed Node Groups
@@ -2575,7 +2575,7 @@
             - Viewer Request: after CloudFront receives a rquest from a viewer
             - Viewer Response: before CloudFront forwards the response to the viewer
         - Native feature of CloudFront (manage code entirely within CloudFront)
-        ![CloudFront + lambda](images/img66.png)
+        ![CloudFront + lambda](resources/img66.png)
 
     - Lambda@Edge
         - Lambda functions writte in NodeJS or Python
@@ -2586,10 +2586,10 @@
             - Origin Response - after CloudFront receives the response from the origin
             - Viewer Response - before CloudFront forwards the response to the viewer
         - Author your functions in one AWS Region (us-east-1), then CloudFront replicates to its locations
-        ![Lambda@EDGE](images/img67.png)
+        ![Lambda@EDGE](resources/img67.png)
 
     - CloudFront Functions vs. Lambda@Edge
-        ![CloudFront + Lambda@Edge](images/img68.png)
+        ![CloudFront + Lambda@Edge](resources/img68.png)
 
         - Use cases:
             - CloudFront Functions
@@ -2611,11 +2611,11 @@
 - VPC
     - By default, your Lambda function is launched outside your own VPC (in an AWS-owned VPC)
     - Therefore, it cannot access resources in your VPC (RDS, ElastiCache, internal ELB...)
-    ![VPC](images/img69.png)
+    ![VPC](resources/img69.png)
 
     - To access Lambda in VPC, you must define the VPC ID, the Subnets and the Security Groups
     - Lambda will create an ENI (elastic Network Interface) in your subnets
-    ![VPC](images/img70.png)
+    ![VPC](resources/img70.png)
 
 - Lambda with RDS Proxy
     - If Lambda functions directly access your databse, they may open too many connections under high load
@@ -2624,7 +2624,7 @@
         - Improve availability by reducing by 66% the failover time and preserving connections
         - Improve security by enforcing IAM authentication and storing credentials in Secrets Manager
     - The Lambda functions must be deployed in your VPC, because RDS Proxy is never publicly accessible
-    ![Lambda with RDS](images/img71.png)
+    ![Lambda with RDS](resources/img71.png)
 
 
 ## AWS DynamoDB
@@ -2671,10 +2671,10 @@
     - Microseconds latency for cached data
     - Doesn't require application logic modification (compatible with existing DynamoDB APIs)
     - 5 minute TTL for cache (default)
-    ![DynamoDB Accelerator (DAX)](/images/img72.png)
+    ![DynamoDB Accelerator (DAX)](/resources/img72.png)
     
     - DAX vs. ElastiCache
-    ![DAX vs. ElastiCache](/images/img73.png)
+    ![DAX vs. ElastiCache](/resources/img73.png)
 
 - DynamoDB Stream Processing
     - Ordered stream of item-level modifications (create/update/delete) in a table
@@ -2685,7 +2685,7 @@
         - Implement cross-region replication
         - Invokke AWS Lambda on changes to your DynamoDB table
 
-    ![DynamoDB Streams vs. Kinesis Data Streams](/images/img74.png)
+    ![DynamoDB Streams vs. Kinesis Data Streams](/resources/img74.png)
 
 - DynamoDB Global Tables
     - Make a DynamoDB table accessible with low latency in multiple-regions
@@ -2863,7 +2863,7 @@ Encryption in transit and at rest
 - Use cases: IoT apps, operations applications, real-time analytics, ...
 
 - Architecture use cases:
-![Amazon Timestream](images/img85.png)
+![Amazon Timestream](resources/img85.png)
 
 
 ## AWS Athena
@@ -2883,14 +2883,14 @@ Encryption in transit and at rest
         - Use Glue to convert your data your Parquet or ORC
     - Compress data for smaller retrievals (bzip2, gzip, lz4, snappy, zlip, zstd...)
     - Partition datasets in S3 for easy querying on virtual columns
-    ![Athena Partition datasets](images/img86.png)
+    ![Athena Partition datasets](resources/img86.png)
     - Use largers files (> 128 MB) to minimize overhead
 
 - Federated Query
     - Allows you to run SQL queries across data stored in relation, non-relational, object, and custom data sources (AWS or on-premises)
     - Uses Data Source Connectors that run on AWS Lambda to run Federated Queries (e.g., CloudWatch Logs, DynamoDB, RDS, ...)
     - Store the results back in Amazon S3
-    ![Athena Federated Query](images/img87.png)
+    ![Athena Federated Query](resources/img87.png)
 
 
 ## AWS Redshift
@@ -2908,7 +2908,7 @@ Encryption in transit and at rest
     - Compute node: for performing the queries, send results to leader
     - You provision the node size in advance
     - You can use Reserved Instances for cost saving
-    ![Redshift cluster](images/img88.png)
+    ![Redshift cluster](resources/img88.png)
 
 - Snapshts & DR (Disaster recovery)
     - Redshift has no "Multi-AZ" mode
@@ -2920,17 +2920,17 @@ Encryption in transit and at rest
 
     - You can configure Amazon Redshift to automatically copy snapshots (automated or manual) of a cluster to another AWS region
 
-    ![Redshit snapshots](images/img89.png)
+    ![Redshit snapshots](resources/img89.png)
 
 - Loading data into Redshift
     - Large inserts are much better
-    ![Redshift loading data](images/img90.png)
+    ![Redshift loading data](resources/img90.png)
 
 - Spectrum
     - Query data is already in S3 without loading it
     - Must have a Redshift cluster available to start the query
     - The query is then submitted to housands of Redshift Spectrum nodes
-    ![Redshift Spectrum](images/img91.png)
+    ![Redshift Spectrum](resources/img91.png)
 
 
 ## AWS OpenSearch
@@ -2946,13 +2946,13 @@ Encryption in transit and at rest
 
 - OpenSearch patterns
     - DynamoDB
-    ![OpenSearch DynamoDB](images/img92.png)
+    ![OpenSearch DynamoDB](resources/img92.png)
 
     - CloudWatch Logs
-    ![OpenSearch CloudWatch Logs](images/img93.png)
+    ![OpenSearch CloudWatch Logs](resources/img93.png)
 
     - Kinesis Data Streams & Kinesis Data Firehose
-    ![Kinesis services](images/img94.png)
+    ![Kinesis services](resources/img94.png)
 
 
 
@@ -2991,7 +2991,7 @@ Encryption in transit and at rest
 - Enterprise edition: Possibility to setup Column-Level security (CLS)
 
 - Quick Sight Integrations:
-![QuickSight integrations](images/img95.png)
+![QuickSight integrations](resources/img95.png)
 
 - Dashboard & Analysis
     - Define Users (standard versions) and Groups (enterprise version)
@@ -3010,10 +3010,10 @@ Encryption in transit and at rest
 - Fully serverless service
 
 - Usage example - Convert data into Parquet format
-![AWS Glue usage](images/img96.png)
+![AWS Glue usage](resources/img96.png)
 
 - Glue Data Catalog: catalog of datasets
-![Glue Data Catalog](images/img97.png)
+![Glue Data Catalog](resources/img97.png)
 
 - Things to know at a high-level
     - Glue Job Bookmarks: prevent re-processing old data
@@ -3037,10 +3037,10 @@ Encryption in transit and at rest
 - Built on top of AWS Glue
 
 - Example AWS Lake Formation:
-![Lake Formation](images/img98.png)
+![Lake Formation](resources/img98.png)
 
 - Centralized Permissions Example:
-![Centralized Permissions AWS Lake Formation](images/img99.png)
+![Centralized Permissions AWS Lake Formation](resources/img99.png)
 
 
 ## AWS Kinesis Data Analytics
@@ -3057,7 +3057,7 @@ Encryption in transit and at rest
         - Time-series analytics
         - Real-time dashboards
         - Real-time metrics
-    ![Kinesis Analytics for SQL apps](images/img100.png)
+    ![Kinesis Analytics for SQL apps](resources/img100.png)
 
 - Kinesis Data Analytics for Apache Flink
     - Use Flink (Java, Scala or SQL) to process and analyze streaming data
@@ -3081,7 +3081,7 @@ Encryption in transit and at rest
     - MSK automatically provisions recources and scales compute & storage
 
 - Apache Kafka at a hihg level:
-![Kafka](images/img101.png)
+![Kafka](resources/img101.png)
 
 - Kinesis Data Streams vs. Amazon MSK
     - Kinesis Data Streams:
@@ -3099,7 +3099,7 @@ Encryption in transit and at rest
         - KSM at-rest encryption
 
 - Consumers:
-![Kafka consumers](images/img102.png)
+![Kafka consumers](resources/img102.png)
 
 
 ## AWS Rekognition
@@ -3247,7 +3247,7 @@ Encryption in transit and at rest
             - Amazon Kinesis Data Firehose (and then its destinations)
             - 3rd party service provider: Datalog, Dynatrace, New Relic, Splunk, Sumo Logic...
         - Option to filter metrics to only stream a subset of them
-        ![CloudWatch Metrics Streams](images/img104.png)
+        ![CloudWatch Metrics Streams](resources/img104.png)
 
 
 - CloudWatch Logs
@@ -3285,10 +3285,10 @@ Encryption in transit and at rest
         - Not near-real time or real-time... use Logs Subscriptions instead
 
     - Logs Subscriptions
-    ![CloudWatch Logs Subscription](images/img105.png)
+    ![CloudWatch Logs Subscription](resources/img105.png)
 
     - Log Aggregation Multi-Account & Multi Region
-    ![CloudWatch Log Aggregation](images/img106.png)
+    ![CloudWatch Log Aggregation](resources/img106.png)
 
 - CloudWatch Logs for EC2
     - By default, no logs from your EC2 machine will go to CloudWatch
@@ -3345,7 +3345,7 @@ Encryption in transit and at rest
             - Instance status = check the EC2 VM
             - System status = check the underlying hardware
         - Recovery: Same PRivate, Public, Elastic IP, metadata, placement group
-        ![CloudWatch EC2 recovery](images/img107.png)
+        ![CloudWatch EC2 recovery](resources/img107.png)
 
     - Good to know:
         - Alarms can be created based on CloudWatch Logs Metrics Filters
@@ -3392,13 +3392,13 @@ Encryption in transit and at rest
 - Trigger Lambda functions, send SQS/SNS messages...
 
 - Rules
-    ![EventBridge rules](images/img108.png)
+    ![EventBridge rules](resources/img108.png)
 
 - Event Bus
     - Event buses can be accessed by other AWS accounts using Resource-based Policies
     - You can archive evnets (all/filter) sent to an event bus (indefinitely or set period)
     - Ability to replay archived events
-    ![EventBridge Event bus](images/img109.png)
+    ![EventBridge Event bus](resources/img109.png)
 
 - Schema Registry
     - EventBridge can analyze the events in your bus and infer the schema
@@ -3424,7 +3424,7 @@ Encryption in transit and at rest
 - If a resource is deleted in AWS, investigate CloudTrail first
 
 - Diagram:
-![CloudTrail diagram](images/img110.png)
+![CloudTrail diagram](resources/img110.png)
 
 - Events:
     - Management Events:
@@ -3450,14 +3450,14 @@ Encryption in transit and at rest
             - Anomalies appear in the CloudTrail console
             - Event is sent to Amazon S3
             - An EventBridge event is generated (for automation needs)
-            ![CloudTrail Insights](images/img111.png)
+            ![CloudTrail Insights](resources/img111.png)
 
         - Retention
             - Events are stored for 90 days in CloudTrail
             - To keep events beyond this period, log them to S3 and use Athena
 
 - Intercept API Calls
-    ![CloudTrail Intercept API Calls](images/img112.png)
+    ![CloudTrail Intercept API Calls](resources/img112.png)
 
 
 ## AWS Config
@@ -3494,13 +3494,13 @@ Encryption in transit and at rest
     - Use AWS-Managed AUtomation Documents or create custom Automation Documents
         - Tip: you can create custom Automation Documents that invokes Lambda functions
     - You can set Remediation Retries if the resource is still non-compliant after auto-remediation
-    ![Config Remediation](images/img113.png)
+    ![Config Remediation](resources/img113.png)
 
 - Notifications
     - Use EventBridge to trigger notifications when AWS resources are non-compliant
-    ![Config Notifications EventBridge](images/img114.png)
+    ![Config Notifications EventBridge](resources/img114.png)
     - Ability to send configuration changes and compliance state notification to SNS (all events - use SNS Filtering or filter at client-side)
-    ![Config Notifications SNS](images/img115.png)
+    ![Config Notifications SNS](resources/img115.png)
 
 
 ## AWS Organizations
@@ -3514,7 +3514,7 @@ Encryption in transit and at rest
 - Shared reserved instances and Savings Plans discounts across accounts
 - API is available to automate AWS account creation
 
-![AWS Organizations](images/img116.png)
+![AWS Organizations](resources/img116.png)
 
 - Advantages
     - Multi Account vs One Account Multi VPC
@@ -3528,7 +3528,7 @@ Encryption in transit and at rest
     - Must hava an explicit allow (does not allow anything by default - like IAM)
 
 - SCP Examples: Blocklist and Allowlist strategies
-![Organizations examples](images/img117.png)
+![Organizations examples](resources/img117.png)
 
 
 ## AWS Cognito
@@ -3553,7 +3553,7 @@ Encryption in transit and at rest
     
     - Integrations
         - CUP integrates with API Gateway and Application Load Balancer
-        ![Cognito CUP Integrations](images/img121.png)
+        ![Cognito CUP Integrations](resources/img121.png)
 
 - Cognito Identity Pools (Federated Identities)
     - Get identities for "users" so they obtain temporary AWS credentials
@@ -3563,10 +3563,10 @@ Encryption in transit and at rest
     - The IAM policies applied to the credentials are defined in COgnito
     - They can be customized based on the userd_id for fine grained control
     - Default IAM roles for authenticated and guest users
-    ![Cognito Identity Pools](images/img122.png)
+    ![Cognito Identity Pools](resources/img122.png)
 
     - Row Level Security in DynamoDB
-    ![Row Level Security in DynamoDB](images/img123.png)
+    ![Row Level Security in DynamoDB](resources/img123.png)
 
 
 ## AWS IAM Identity Center (sucessor to AWS Single Sign-On)
@@ -3581,11 +3581,11 @@ Encryption in transit and at rest
     - 3rs party: Active Directory (AD), OneLogin, Okta
 
 - Login Flow
-![IAM Identity Center flow](images/img124.png)
+![IAM Identity Center flow](resources/img124.png)
 
 - How AWS IAM Identity Center works:
-![IAM Identity Center](images/img125.png)
-![IAM Identity Center Permissions](images/img126.png)
+![IAM Identity Center](resources/img125.png)
+![IAM Identity Center Permissions](resources/img126.png)
 
 - Fine-grained PErmissions and Assignments
     - Multi-Account Permissions
@@ -3615,7 +3615,7 @@ Encryption in transit and at rest
     - AD-compatible managed directory on AWS
     - Cannot be joined with on-premise AD
 
-![AWS Directory Services](images/img127.png)
+![AWS Directory Services](resources/img127.png)
 
 - Active Directory Setup
     - Connect to an AWS Managed Microsoft AD (Directory Service)
@@ -3640,7 +3640,7 @@ Encryption in transit and at rest
     - Provides ongoing governance for your Control Tower environment (AWS Accounts)
     - Preventive Guardrail - using SCPs (e.g., Restrict Regions across all your accounts)
     - Detective Guardrail - using AWS Config (e.g., identify untagged resources)
-    ![AWS Control Center Guardrails](images/img128.png)
+    ![AWS Control Center Guardrails](resources/img128.png)
 
 
 ## AWS KMS (Key Management Service)
@@ -3678,7 +3678,7 @@ Encryption in transit and at rest
     - Imported KMS Key: only manual rotation possible using alias
 
 - Copying Snapshots across regions
-![KSM Copying Snapshots across regions](images/img132.png)
+![KSM Copying Snapshots across regions](resources/img132.png)
 
 - Policies
     - Control access to KMS keys, "similar" to S3 buket policies
@@ -3693,7 +3693,7 @@ Encryption in transit and at rest
         - Useful for cross-account access of your KMS key
 
 - Multi-Region Keys
-![KMS Multi-Region key](images/img133.png)
+![KMS Multi-Region key](resources/img133.png)
 
 - Identical KMS keys in different AWS Regions that can be used interchangeably
 - Multi-Region keys have the same key ID, key material, automatic rotation...
@@ -3711,7 +3711,7 @@ Encryption in transit and at rest
     - Combined with Global Tables, the client-side encrypted data is replicated to other regions
     - If we use a multi-region key, replicated in the same region as the DYnamoDB Global table, the clients in these regions can use low-latency API calls to KMS in their region to decrypt the data client-side
     - Using client-side encryption we can protect specific fields and guarantee only decryption if the client has access to an API key
-    ![DynamoDB Global Table + KMS Multi-Region](images/img134.png)
+    ![DynamoDB Global Table + KMS Multi-Region](resources/img134.png)
 
 - S3 Replication Encrytion COnsiderations
     - For objects encrypted with SSE-KMS, you need to enable the option
@@ -3727,7 +3727,7 @@ Encryption in transit and at rest
     3. Must share the KMS Keys used to encrypted the snapshot the AMI references with the target account / IAM Role
     4. The IAM Role/User in the target account must have the permissions to DescribeKey, ReEncrypted, CreateGrant, Decrypt
     5. When launching an EC2 instance from the AMI, optionally the target account can specify a new KMS key in its own account ot re-encrypt the volumes
-    ![Sharing proccess Encrypted via KMS](images/img135.png)
+    ![Sharing proccess Encrypted via KMS](resources/img135.png)
 
 
 ## SSM Parameter Store (AWS Systems Manager)
@@ -3738,7 +3738,7 @@ Encryption in transit and at rest
 - Security through IAM
 - Notifications with Amazon EventBridge
 - Integration with CloudFormation
-![SSM Parameter Store](images/img136.png)
+![SSM Parameter Store](resources/img136.png)
 
 - Hierarchy examples:
     - /my-department/
@@ -3750,7 +3750,7 @@ Encryption in transit and at rest
         - other-app/
 
 - Standard and advanced parameter tiers:
-![SSM Parameter tiers](images//img137.png)
+![SSM Parameter tiers](resources//img137.png)
 
 - Policies (for advanced parameters)
     - Allow to assing a TTL to a parameter (expiration date) to force updating or deleting sensitive data such as passwords
@@ -3806,7 +3806,7 @@ Encryption in transit and at rest
     - AWS Config has a managed rule named acm-certificate-expiration-check to check for expiring certificates (configurable number of days)
 
 - Integration with ALB
-![Certificate Manage with ALB](images/img138.png)
+![Certificate Manage with ALB](resources/img138.png)
 
 - Integration with API Gateway
     - Create a Custom Domain Name in API Gateway
@@ -3819,7 +3819,7 @@ Encryption in transit and at rest
         - For clients within the same region
         - The TLS Certificate must be imported on API Gateway, in the same region as the API Stage
         - Then setup CNAME or (better) A-Alias record in Route 53
-    ![ACM with AGW](images/img139.png)
+    ![ACM with AGW](resources/img139.png)
 
 
 ## AWS WAF - Web Application Firewall
@@ -3845,7 +3845,7 @@ Encryption in transit and at rest
 - Fixed IP while using WAF with a Load Balancer
     - WAF does not supports the Network Load Balancer (Layer 4)
     - We can use a Global Accelerator for fixed IP and WAF on the ALB
-    ![WAF with ALB](images/img140.png)
+    ![WAF with ALB](resources/img140.png)
 
 
 ## AWS Shield
@@ -3898,7 +3898,7 @@ Encryption in transit and at rest
 - Can setup ClodWatch Event rules to be notified in case of findings
 - CLoudWatch Events rules can target AWS Lambda or SNS
 - Can protect against CryptoCurrency attacks (has a dedicated "finding" for it)
-![GuardDuty](images/img142.png)
+![GuardDuty](resources/img142.png)
 
 
 ## Amazon Inspector
@@ -3931,7 +3931,7 @@ Encryption in transit and at rest
 ## Amazon Macie
 - Amazon Macie is a fully managed data security and data privacy service that uses machine learning and pattern matching to discover and protect your sensitive data in AWS
 - Macie helps identify and alert you to sensitive data, sucha as personally identifiable information (PII)
-![Amazon Macie](images/img143.png)
+![Amazon Macie](resources/img143.png)
 
 
 ## AWS VPC
@@ -3952,7 +3952,7 @@ Encryption in transit and at rest
 - Your VPC CIDR should NOT overlap with your other networks (e.g., corporate)
 
 - Subnet
-    ![VPC Subnet](images/img145.png)
+    ![VPC Subnet](resources/img145.png)
     - AWS reserves 5 IP adresses (first 4 & last 1) in each subnet
     - These 5 IP addresses are not available for use and can't be assigned to and EC2 instance
     - Example: if CIDR block 10.0.0.0/24, then reserved IP addresses are:
@@ -3975,14 +3975,14 @@ Encryption in transit and at rest
     - INternet Gateways on their own do not allow Internet access.
     - Route tables must also be edited
 
-    ![VPC IGW](images/img146.png)
+    ![VPC IGW](resources/img146.png)
 
 - Bastion Hosts
     - We can use a Bastion Host to SSH into our privated EC2 instances
     - The bastion is in the public subnet wich is then connected to all other private subnets
     - Bastion Host security group must allow inbound from the internet on port 22 from restricted CIDR, for example the public CIDR of your corporation
     - Security Group of the EC2 Instances must allow the SEcurity Group of the Bastion Host, or the private IP of the Bastion host
-    ![VPC Bastion Hosts](images/img147.png)
+    ![VPC Bastion Hosts](resources/img147.png)
 
 - NAT Instance (outdated, but still at the exam)
     - NAT = Network Address Translation
@@ -3992,7 +3992,7 @@ Encryption in transit and at rest
     - Must have Elastic IP attached to it
     - Route Tables must be configured to a route traffic from private subnets to the NAT Instance
 
-    ![VPC NAT](images/img148.png)
+    ![VPC NAT](resources/img148.png)
 
     - Comments:
         - Pre-configured Amazon Linux AMI is available
@@ -4016,20 +4016,20 @@ Encryption in transit and at rest
     - 5 Gbps of bandwidth with automatic scaling up to 45Gbps
     - No Security Groups to manage / required
 
-    ![VPC NATGW](images/img149.png)
+    ![VPC NATGW](resources/img149.png)
 
     - Hight Availability
         - NAT Gateway is resilient within a single Availability Zone
         - Must create multiple NAT Gateways in multiple AZs for fault-tolarance
         - There is no cross-AZ failover needed because if an AZ goes down it doesn't need NAT
 
-        ![VPC NATGW Availability](images/img150.png)
+        ![VPC NATGW Availability](resources/img150.png)
 
     - NAT Gateway vs. NAT Instance
-        ![NATGW vs NAT Instance](images/img151.png)
+        ![NATGW vs NAT Instance](resources/img151.png)
 
 - Security Groups & NACLs
-![Security Groups & NACLs](images/img152.png)
+![Security Groups & NACLs](resources/img152.png)
 
 - Network Access Control List (NACL) are like a firewall wich control traffic from and to subnets
 - One NACL per subnet, new subnets are assigned the Default NACL
@@ -4042,12 +4042,12 @@ Encryption in transit and at rest
 - Newly created NACLs will deny everything
 - NACL are a great way of blocking a specific IP address at t he subnet level
 
-![NACLs](images/img153.png)
+![NACLs](resources/img153.png)
 
 - Default NACL
     - Accepts everything inbount/outbound with the subnets it's associated with
     - Do NOT modify the Default NACL, instead create custom NACLs
-    ![Default NACLs](images/img154.png)
+    ![Default NACLs](resources/img154.png)
 
 - Ephemeral Ports
     - For any two endpoints to establish a connection, they must use ports
@@ -4057,13 +4057,13 @@ Encryption in transit and at rest
         - Many Linux Kernels -> 32768 - 60999
 
 - NACL with Ephemeral Ports
-![NACL with Ephemeral Ports](images/img156.png)
+![NACL with Ephemeral Ports](resources/img156.png)
 
 - Create NACL rules for each target subnets CIDR
-![NACL rules for each target subnets CIDR](images/img157.png)
+![NACL rules for each target subnets CIDR](resources/img157.png)
 
 - Security Group vs. NACLs
-![Security Group vs. NACLs](images/img158.png)
+![Security Group vs. NACLs](resources/img158.png)
 
 - VPC Peering
     - Privately connect two VPCs using AWS network
@@ -4071,18 +4071,18 @@ Encryption in transit and at rest
     - Must not have overlapping CIDRs
     - VPC Peering connection is NOT transitive (must be established for each VPC that need to communicate with one another)
     - You must update route tables in each VPC's subnets to ensure EC2 instances can communicate with each other
-    ![VPC Peering](images/img159.png)
+    ![VPC Peering](resources/img159.png)
 
     - Good to know
         - You can create VPC Peering connection between VPCs in different AWS accounts/regions
         - You can reference a security group in a peered VPC (works cross account - same region)
 
-    ![VPC Peering](images/img160.png)
+    ![VPC Peering](resources/img160.png)
 
 
 - VPC Endpoints
     - Every AWS service is publicly exposed (public URL)
-    ![VPC Endpoints](images/img161.png)
+    ![VPC Endpoints](resources/img161.png)
     - VPC Endpoints (powered by AWS PrivateLink) allows you to connect to AWS services using a private network instead of using t he public Internet
     - They're redundant and scale horizontally
     - They remove the need of IGW, NATGW,.... to access AWS Services
@@ -4090,7 +4090,7 @@ Encryption in transit and at rest
         - Check DNS Seeting Resolution in your VPC
         - Check Route Tables
 
-    ![VPC Endpoint example](images/img162.png)
+    ![VPC Endpoint example](resources/img162.png)
 
     - Types of Endpoints
         - Interface Endpoints (powered by PrivateLink)
@@ -4116,7 +4116,7 @@ Encryption in transit and at rest
     - Helps to monitor & troubleshoot connectivity issues
     - Flow logs data can go to S3 / CloudWatch Logs
     - Captures network information from AWS managed interfaces too: ELB, RDS, ELastiCAche, Redshift, Workspace, NATGW, Transit Gateway...
-    ![VPC Flow Logs](images/img163.png)
+    ![VPC Flow Logs](resources/img163.png)
 
 - Site-to-Site VPN
     - Virtual Private Gateway (VGW)
@@ -4133,14 +4133,14 @@ Encryption in transit and at rest
                 - If it's behind a NAT device that's enabled for NAT traversal (NAT-T), use the public IP address of the NAT device
             - Importante step: enable Route Propagation for the Virtual Private Gateway in the route table that is associated with your subnets
             - If you need to ping your EC2 instances from on-premises, make sure you add the ICMP protocol on the inbound of your security
-            ![Site-to-Site VPN](images/img164.png)
+            ![Site-to-Site VPN](resources/img164.png)
 
 - AWS - VPN CloudHub
     - Provide secure communication between multiples sites, if you have multiple VPN connections
     - Low-cost hub-and-spoe model for primary or secondary network connectivity between different localtions (VPN only)
     - IT's a VPN connection so it goes over the public Internet
     - To set it up, connect multiple VPN connections on the same VGW, setup dynamic routing and configure route tables
-    ![VPN CloudHub](images/img165.png)
+    ![VPN CloudHub](resources/img165.png)
 
 - Transit Gateway
     - For having transitive peering between thousands of VPC and on-premises, hub-and-spoke (star) connection
@@ -4150,19 +4150,19 @@ Encryption in transit and at rest
     - Route Tables: limit wich VPC can talk with other VPC
     - Works with Direct Connect Gateway, VPN connections
     - Supports IP Multicast (not supported by any other AWS service)
-    ![Transit Gateway](images/img172.png)
+    ![Transit Gateway](resources/img172.png)
 
     - Increasing bandwidth Site-to-Site VPN ECMP
         - ECMP = Equal-cost multi-path routing
         - Routing strategy to allow to forward a packet over multiple best path
         - Use case: create multiple Site-to-Site VPN connections to increase the bandwidth of your connection to AWS
-        ![Transit Gatewat with Site-to-Site](images/img173.png)
+        ![Transit Gatewat with Site-to-Site](resources/img173.png)
 
     - Throughput with ECMP
-    ![Throughput with ECMP](images/img174.png)
+    ![Throughput with ECMP](resources/img174.png)
 
     - Share Direct Connect between multiple accounts
-    ![Share Direct Connect between multiple accounts](images/img175.png)
+    ![Share Direct Connect between multiple accounts](resources/img175.png)
 
 - VPC - Traffic Mirroring
     - Allows you to capture and inspect network traffic in your VPC
@@ -4173,7 +4173,7 @@ Encryption in transit and at rest
     - Capture all packets or capture tha packets of your interest (optionally, truncate packets)
     - Source and Target can be in the same VPC or different VPCs (VPC Peering)
     - Use cases: content inspection, threat monitoring, troubleshooting, ...
-    ![VPC Traffic Mirroring](images/img176.png)
+    ![VPC Traffic Mirroring](resources/img176.png)
 
 - IPv6 for VPC
     - IPv4 cannot be disabled for your VPC and subnets
@@ -4196,10 +4196,10 @@ Encryption in transit and at rest
 
     - Allows instances in your VPC outbound connections over IPv6 while preventing the internet to initiate an IPv6 connection to your instances
     - You must update the Route Tables
-    ![Egress-only Internet Gateway](images/img177.png)
+    ![Egress-only Internet Gateway](resources/img177.png)
 
     - IPv6 Routing
-    ![IPv6 Routing](images/img178.png)
+    ![IPv6 Routing](resources/img178.png)
 
 - VPC Summary:
     - CIDR - IP Range
@@ -4242,11 +4242,11 @@ Encryption in transit and at rest
     - Hybrid Environments (on prem + cloud)
 - Supports both IPv4 and IPv6
 
-![DX](images/img166.png)
+![DX](resources/img166.png)
 
 - Direct Connect Gateway
     - If you want to setup a Direct Connect to one or more VPC in many different regions (same account), you must use a Direct Connect Gateway
-    ![Direct Connect Gateway](images/img167.png)
+    ![Direct Connect Gateway](resources/img167.png)
 
 - Connection Types
     - Dedicated Connections: 1Gbps, 10 Gbps and 100 Gbps capacity
@@ -4262,24 +4262,24 @@ Encryption in transit and at rest
     - Data is transit is not encrypted but is private
     - AWS Direct Connect + VPN rpovides an IPsec-encrypted private connection
     - Good for an extra level of security, but slightly more complex to ut in place
-    ![DX Encryption](images/img168.png)
+    ![DX Encryption](resources/img168.png)
 
 - Resiliency
     - High Resiliency for Critical Workloads
         - One connection at multiple locations
-        ![DX high resiliency](images/img169.png)
+        ![DX high resiliency](resources/img169.png)
 
     - Maximum Resiliency for Critical Workloads
         - Maximum resilience is achieved by separate connections terminating on separate devices in more than one location
-        ![DC max resiliency](images/img170.png)
+        ![DC max resiliency](resources/img170.png)
 
 - Site-to-Site VPN connection as a backup
     - In case Direct COnnect fails, you can set up a backup Direct Connect connection (expensive), or a Site-to-Site VPN Connection
-    ![Connection backup](images/img171.png)
+    ![Connection backup](resources/img171.png)
 
 
 ## Networking Costs in AWS per GB - Simplified
-![Networking Costs in AWS per GB](images/img179.png)
+![Networking Costs in AWS per GB](resources/img179.png)
 - Use Private IP instead of Public IP for good savings and better network performance
 - Use same AZ for maximum savings (at the cost of high availability)
 
@@ -4288,7 +4288,7 @@ Encryption in transit and at rest
     - Ingress traffic: inbound traffic - from outside to AWS (typically free)
     - Try to keep as much internet traffic within AWS to minimize costs
     - Direct Connect location that are co-located in the same AWS Region result in lower cost for egress network
-![Minimizing egress traffic network cost](images/img180.png)
+![Minimizing egress traffic network cost](resources/img180.png)
 
 - S3 Data Transfer Pricing - Analysis for USA
     - S3 ingres: free
@@ -4301,10 +4301,10 @@ Encryption in transit and at rest
         - Caching capability (lower latency)
         - Reduce cost associated with S3 Requests Pricing (7x chearper with CloudFront)
     - S3 Cross Region Replication: $0.02 per GB
-    ![S3 data transfer pricing](images/img181.png)
+    ![S3 data transfer pricing](resources/img181.png)
 
 - Pricing NAT Gateway vs Gateway VCP Endpoint
-![NAT Gateway vs Gateway VCP Endpoint](images/img182.png)
+![NAT Gateway vs Gateway VCP Endpoint](resources/img182.png)
 
 ## AWS Network Firewall
 - Protect your entire Amazon VPC
@@ -4318,7 +4318,7 @@ Encryption in transit and at rest
 
 - Internally, the AWS Network Firewall uses the AWS Gateway Load Balancer
 - Rules can be centrally managed cross-account by AWS Firewall Manager to apply to many VPCs
-![AWS network firewall](images/img183.png)
+![AWS network firewall](resources/img183.png)
 
 - Supports 1000s of rules
     - IP & port - example: 10,000s of IPs filtering
@@ -4343,20 +4343,20 @@ Encryption in transit and at rest
     - RTO: Recovery Time Objective
 
 - RPO and RTO
-    ![ROT and RTO](images/img184.png)
+    ![ROT and RTO](resources/img184.png)
 
 - Disaster Recovery Strategies
     - Backup and Restore
     - Pilot Light
     - Warm Standby
     - Hot Site / Multi Site Approach
-    ![DR strategies](images/img185.png)
+    ![DR strategies](resources/img185.png)
 
     - Backup and Restore (High RPO)
         - Very easy
         - Not too expensive
         - High RPO and RTO
-        ![DR Backup and Restore](images/img186.png)
+        ![DR Backup and Restore](resources/img186.png)
 
     - Pilot Light
         - A small version of the app is always running in the cloud
@@ -4365,20 +4365,20 @@ Encryption in transit and at rest
         - Faster than Backup and Restore as critical systems are already up
         - Very popular choise
         - Only for critical systems
-        ![DR Pilot Light](images/img187.png)
+        ![DR Pilot Light](resources/img187.png)
 
     - Warm Standby
         - Full system is up and running, but at minimum size
         - Upon disaster, we can scale to production load
         - More costly
         - Decrease RPO and RTO
-        ![DR Warm Standby](images/img188.png)
+        ![DR Warm Standby](resources/img188.png)
 
     - Multi Site / Hot Site Aproach
         - Very low RTO (minutes or seconds) - very expensive
         - Full Production Scale is running AWS and On Premise
-        ![DR Multi Site](images/img189.png)
-        ![DR Multi Site full Cloud](images/img190.png)
+        ![DR Multi Site](resources/img189.png)
+        ![DR Multi Site full Cloud](resources/img190.png)
 
 - Disaster Recovery Tips
     - Backup
@@ -4436,7 +4436,7 @@ Encryption in transit and at rest
         - The DB engine is still PostgreSQL (RDS is the platform)
 
 - DMS - Continuous Replications
-![DMS continuous Replications](images/img191.png)
+![DMS continuous Replications](resources/img191.png)
 
 - RDS & Aurora MySQL Migrations
     - RDS MySQL to Aurora MySQL
@@ -4450,7 +4450,7 @@ Encryption in transit and at rest
             - Create an Aurora MySQL DB
             - Use the mysqldump utility to migrate MySQL into AUrora (slower than S3 method)
         - Use DMS if both databases are up and running
-    ![RDS & Aurora MySQL Migrations](images/img192.png)
+    ![RDS & Aurora MySQL Migrations](resources/img192.png)
 
 - RDS & Ayrora PostgreSQL Migrations
     - RDS PostgreSQL to Aurora PostgreSQL
@@ -4460,7 +4460,7 @@ Encryption in transit and at rest
         - Create a backup and put it in Amazon S3
         - Import it using the aws_s3 Aurora extension
         - Use DMS if both databases are up and r unning
-    ![RDS & Ayrora PostgreSQL Migrations](images/img193.png)
+    ![RDS & Ayrora PostgreSQL Migrations](resources/img193.png)
 
 
 ## On-Premise strategy with AWS
@@ -4527,7 +4527,7 @@ Encryption in transit and at rest
 - Converts your physical, virtual, and cloud-based servers to run natively on AWS
 - Supports wide range of platforms, OSs, and databases
 - Minimal downtime, reduced costst
-![AWS MGN](images/img194.png)
+![AWS MGN](resources/img194.png)
 
 
 ## Transferring large amount of data into AWS
@@ -4557,7 +4557,7 @@ Encryption in transit and at rest
 
 ## Event Processing in AWS
 - Lambda, SNS & SQS
-![Lambda, SNS & SQS](images/img195.png)
+![Lambda, SNS & SQS](resources/img195.png)
 
 - Fan Out Pattern: deliver to multiple SQS
 ![Fan Out Pattern]()
@@ -4567,20 +4567,20 @@ Encryption in transit and at rest
     - Use case: generate thumbnails of images uploadaded to S3
     - Can create as many "S3 events" as desired
     - S3 envet notifications typically deliver events in seconds but can sometimes take a minute or longer
-![S3 Event Notifications](images/img197.png)
+![S3 Event Notifications](resources/img197.png)
 
 - S3 Event Notifications with Amazon EventBridge
     - Advanced filtering options with JSON rules
     - Multiple Destinations
     - Event Bridge Capabilities
-    ![S3 Event Notifications with Amazon EventBridge](images/img198.png)
+    ![S3 Event Notifications with Amazon EventBridge](resources/img198.png)
 
 - Amazon EventBridge - Intercept API Calls
-![Amazon EventBridge - Intercept API Calls](images/img199.png)
+![Amazon EventBridge - Intercept API Calls](resources/img199.png)
 
 
 ## Caching Strategies
-![Caching Strategies](images/img200.png)
+![Caching Strategies](resources/img200.png)
 
 
 ## High Performance Computing (HPC)
@@ -4637,13 +4637,13 @@ Encryption in transit and at rest
         - Ability to enable EFA on the cluster (improves network performance)
 
 - Creating a highly available EC2 instance
-![Highly available EC2 instance](images/img201.png)
+![Highly available EC2 instance](resources/img201.png)
 
 - Creating a highly available EC2 instance With an ASG
-![Highly available EC2 instance With an ASG](images/img202.png)
+![Highly available EC2 instance With an ASG](resources/img202.png)
 
 - Creating a highly available EC2 instance With an ASG + EBS
-![Highly available EC2 instance With an ASG + EBS](images/img203.png)
+![Highly available EC2 instance With an ASG + EBS](resources/img203.png)
 
 
 ## AWS CloudFormation
@@ -4675,7 +4675,7 @@ Encryption in transit and at rest
 
 - CloudFormation Stack Designer
     - Example: WordPress CloudFormation Stack
-    ![Wordpress CloudFormation stack](images/img204.png)
+    ![Wordpress CloudFormation stack](resources/img204.png)
 
 
 ## Amazon Simple Email Services (Amazon SES)
@@ -4866,7 +4866,7 @@ Encryption in transit and at rest
         - We don't need a database
         - We want to start small and can accept downtime
         - We want to fully scale vertically and horizontally, no downtime
-        ![Stateless Web App](images/img11.png)
+        ![Stateless Web App](resources/img11.png)
 
         - Scalling proccess:
             - Topics used on the scalling proccess:
@@ -4879,14 +4879,14 @@ Encryption in transit and at rest
                 - Security Group Rules
                 - Reservation of capacity for costing saving when possible
                 - We're considering 5 pillars for a well architected application: cost, performance, reliability, security, operational excellence
-            ![Stateless Scalling proccess](images/img11.png)
-            ![Stateless Scalling proccess](images/img12.png)
-            ![Stateless Scalling proccess](images/img13.png)
-            ![Stateless Scalling proccess](images/img14.png)
-            ![Stateless Scalling proccess](images/img15.png)
-            ![Stateless Scalling proccess](images/img16.png)
-            ![Stateless Scalling proccess](images/img17.png)
-            ![Stateless Scalling proccess](images/img18.png)
+            ![Stateless Scalling proccess](resources/img11.png)
+            ![Stateless Scalling proccess](resources/img12.png)
+            ![Stateless Scalling proccess](resources/img13.png)
+            ![Stateless Scalling proccess](resources/img14.png)
+            ![Stateless Scalling proccess](resources/img15.png)
+            ![Stateless Scalling proccess](resources/img16.png)
+            ![Stateless Scalling proccess](resources/img17.png)
+            ![Stateless Scalling proccess](resources/img18.png)
     
     - Stateful Web App: MyClothes.com
         - MyClothes.com allows people to buy clothes online
@@ -4908,13 +4908,13 @@ Encryption in transit and at rest
                 - Read replicas for scaling reads
                 - Multi AZ for disasters recovery
             - Tight Security with security groups referencing each other
-            ![Statefull web app scalling](images/img19.png)
-            ![Statefull web app scalling](images/img20.png)
-            ![Statefull web app scalling](images/img21.png)
-            ![Statefull web app scalling](images/img22.png)
-            ![Statefull web app scalling](images/img23.png)
-            ![Statefull web app scalling](images/img24.png)
-            ![Statefull web app scalling](images/img25.png)
+            ![Statefull web app scalling](resources/img19.png)
+            ![Statefull web app scalling](resources/img20.png)
+            ![Statefull web app scalling](resources/img21.png)
+            ![Statefull web app scalling](resources/img22.png)
+            ![Statefull web app scalling](resources/img23.png)
+            ![Statefull web app scalling](resources/img24.png)
+            ![Statefull web app scalling](resources/img25.png)
 
     - Stateful Web App: MyWordPress.com
         - We area trying to create a fully scalable WordPress website
@@ -4925,11 +4925,11 @@ Encryption in transit and at rest
             - Aurora Database to have easy Multi-AZ and Read-Replicas easier
             - Storing data in EBS (single instance application)
             - Vs Storing data in EFS (distributed application)
-            ![Statefull web app scalling 2](images/img26.png)
-            ![Statefull web app scalling 2](images/img27.png)
-            ![Statefull web app scalling 2](images/img28.png)
-            ![Statefull web app scalling 2](images/img29.png)
-            ![Statefull web app scalling 2](images/img30.png)
+            ![Statefull web app scalling 2](resources/img26.png)
+            ![Statefull web app scalling 2](resources/img27.png)
+            ![Statefull web app scalling 2](resources/img28.png)
+            ![Statefull web app scalling 2](resources/img29.png)
+            ![Statefull web app scalling 2](resources/img30.png)
             
 - Instantiating Applications quickly
     - When launching a full stack (EC2, EBS, RDS), it can take time to:
@@ -4962,11 +4962,11 @@ Encryption in transit and at rest
         - The database should scale, and have some high read throughput
 
     - REST API layer
-    ![API layer](images/img75.png)
+    ![API layer](resources/img75.png)
     - Giving users access to S3
-    ![S3 access](images/img76.png)
+    ![S3 access](resources/img76.png)
     - high read throughput and caching
-    ![high read throughput and caching](images/img77.png)
+    ![high read throughput and caching](resources/img77.png)
 
     - Serverless REST API: HTTPS, API Gateway, Lambda, DynamoDB
     - Using Cognito to generate temporary credentials with STS to access S3 bucket with restricted policy. App users can directly access AWS resources this way. Pattern can be applied to DynamoDB, Lambda...
@@ -4984,13 +4984,13 @@ Encryption in transit and at rest
         - Any photo uploaded to the blog should have a thimbnail generated
     
     - Static content, globally, securely
-    ![Static content, globally, securely](images/img78.png)
+    ![Static content, globally, securely](resources/img78.png)
     - Public serverless REST API with DynamoDB Global Tables
-    ![Public serverless REST API with DynamoDB Global Tables](images/img79.png)
+    ![Public serverless REST API with DynamoDB Global Tables](resources/img79.png)
     - New user email flow
-    ![New user email flow](images/img80.png)
+    ![New user email flow](resources/img80.png)
     - Thumbnail Generation flow
-    ![Thumbnail Generation flow](images/img81.png)
+    ![Thumbnail Generation flow](resources/img81.png)
 
     - Static content being distributed using CloudFront with S3
     - The REST API was serverless, didn't need Cognito because public
@@ -5003,7 +5003,7 @@ Encryption in transit and at rest
     - Each architecture for each micro service may vary in form and shape
 
     - Micro Service Environment
-    ![Micro Service Environment](images/img82.png)
+    ![Micro Service Environment](resources/img82.png)
 
     - About Micro Services
         - Synchronous pattern: API Gateway, Load Balancers
@@ -5025,10 +5025,10 @@ Encryption in transit and at rest
     - How to optimize the cost and CPU?
 
     - Current state
-    ![Current state](images/img83.png)
+    ![Current state](resources/img83.png)
 
     - Input CloudFront
-    ![Input CloudFront](images/img84.png)
+    ![Input CloudFront](resources/img84.png)
 
     - Cloud front request no changes on the architecture
     - It will cache software update files at the edge
@@ -5049,7 +5049,7 @@ Encryption in transit and at rest
     - The reports created using the queries should be in S3
     - We want to load that data into a warehouse and create dashboards
 
-    ![Big data Solution](images/img102.png)
+    ![Big data Solution](resources/img102.png)
     - IoT Core allows you to harvest data from IoT devices
     - Kinesis is great for real-time data collection
     - Firehose helps with data delivery to S3 in near real-time (1 minute)
@@ -5061,7 +5061,7 @@ Encryption in transit and at rest
 
 
 ## DDoS Protection Best Pratices Resiliency
-![Best Practices for DDoS Resiliency Edge Location Mitigation](images/img141.png)
+![Best Practices for DDoS Resiliency Edge Location Mitigation](resources/img141.png)
 
 - Edge Location  Mitigation (BP1, BP3) 
     - BP = Best Pratices
@@ -5176,21 +5176,21 @@ BYOL - Bring Your Own License?
     - Data is encrypted before sending and  decrypted after receiving
     - SSL Certificates help with encryptions (HTTPS)
     - Encryption in flight ensures no MITM (man in the middle attack) can happen
-    ![SSL Encryption](images/img129.png)
+    ![SSL Encryption](resources/img129.png)
 
 - Server side encryption at rest
     - Data is encrypted after being received by the server
     - Data is decrypted before being sent
     - It is stored in an encrypted form thanks to a key (usually a data key)
     - The encryption / decryption keys must be managed somewhere and the server must have access to it
-    ![Server side encryption](images/img130.png)
+    ![Server side encryption](resources/img130.png)
 
 - Client side encryption
     - Data is encrypted by t he client and never decrypted by the server
     - Data will be decrypted by a receiving client
     - The server should not be able to decrypt the data
     - Could leverage Envelop Encryption
-    ![Client side encryption](images/img131.png)
+    ![Client side encryption](resources/img131.png)
 
 
 ## CIDR
@@ -5218,7 +5218,7 @@ BYOL - Bring Your Own License?
 
 - Subnet Mask
     - The Subnet Mask basically allows part of the underlying IP to get additional next values from the base IP
-    ![Subnet Mask](images/img144.png)
+    ![Subnet Mask](resources/img144.png)
 
 - Public vc Private IP (IPv4)
     - The inernet Assigned Numbers Authority (IANA) established certain blocks of IPv4 addresses for the use of private (LAN) and public (Internet) addresses
