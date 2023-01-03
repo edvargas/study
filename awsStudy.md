@@ -562,7 +562,8 @@
 
 - Load Balancer Security Groups
     - Load Balancer has the own Securty group
-    - For example, we can allow the users from anywhere access the Load Balancer, but the EC2 Instances only allow traffic comming only from the Load Balancer, because de EC2 Security Group will allow HTTP traffic only from the Load Balancer Security Group, this way linking Security Groups, for e.g. in images/img1
+    - For example, we can allow the users from anywhere access the Load Balancer, but the EC2 Instances only allow traffic comming only from the Load Balancer, because de EC2 Security Group will allow HTTP traffic only from the Load Balancer Security Group, this way linking Security Groups
+    ![Load Balancer Security Groups](images/img1.png)
 
 - Application Load Balancer (v2) - ALB
     - Application load balancers is Layer 7 (HTTP)
@@ -648,9 +649,9 @@
             - Cookie name is AWSALB for ALB, AWSELB for CLB
     
 - Cross-Zone Load Balancing
-    - images/img2
     - With Cross Zone Load Balancing - each instance distributes evenly across all registered instances in all AZ
     - Without Cross Zone Load Balancing - requests are distributed in the instance of the node of the Elastic Load Balancer
+    ![Cross-Zone Load Balancing](images/img2.png)
 
     - Application Load Balancer - ALB
         - Enabled by default (can be disabled at the Target Group level)
@@ -716,8 +717,8 @@
 ## AWS ASG - Auto Scaling Group
 - In real-life, the load on your websites and applications can change
 - In the cloud, yo ucan create and get rid of servers very quickly
-- images/img3
-- ASG + ELB - images/img4 
+![ASG + ELB](images/img4.png)
+![AWS ASG](images/img3.png)
 
 - The goal of an Auto Scaling Group is to:
     - Scale out (add EC2 instances) to match an increased load
@@ -881,10 +882,10 @@
         - Support for Cross Region Replication
     
     - Aurora DB Cluster
-        - images/img5
         - Writer Endpoint - POinting to the master
         - Reader Endpoint - Connection Load Balancing to the read replicas
         - Replicas are Auto Scaling
+        ![Aurora DB Cluster](images/img5.png)
     
     - Features of Aurora
         - Automatic fail-over
@@ -1009,17 +1010,17 @@
 - Using ElastiCache involves heavy application code changes
 
 - ElastiCache Solution Architecture - DB Cache
-    - images/img6
     - Applications queries ElastiCache, if not available, get from RDS and store in ElastiCache
     - Helps relieve load in RDS
     - Cache must have an invalidation strategy to make sure only the most current data is used in there
+    ![ElastiCache](images/img6.png)
 
 - ElastiCache Solution Architecture - User Session Store
-    - images/img7
     - User logs into any of the application
     - The application writes the session data into ElastiCache
     - The user hits another instance of our application
     - The instance retrieves the data and the user is already logged in
+    ![ElastiCache Solution Architecture](images/img7.png)
 
 - ElastiCache - Redis vs Memcached
     - Redis
@@ -1096,10 +1097,9 @@
     - You pay $0.50 per month per hosted zone
 
 - Public vs Private Hosted Zones
-    - images/img8
+![Public vs Private Hosted Zones](images/img8.png)
 
 - Records TTL (Time To Live)
-    - images/img9
     - High TTL - e.g., 24h
         - Less traffic on Route 53
         - Possibly outdated records
@@ -1107,6 +1107,7 @@
         - More traffic on Route 53 ($$$)
         - Records are outdated for less time
         - Easy to change records
+    ![Records TTL](images/img9.png)
     
     - Except for Alias records, TTL is mandatory for each DNS record
 
@@ -1117,7 +1118,7 @@
         - Points a hostname to any other hostname (app.mydomain.com => lalala.anything.com)
         - ONLY FOR NON ROOT DOMAIN (aka.something.mydomain.com)
     - Alias:
-        - POints a hostname to an AWS Resource (app.domain.com => lalala.amazonaws.com)
+        - Points a hostname to an AWS Resource (app.domain.com => lalala.amazonaws.com)
         - Works for ROOT DOMAIN and NON ROOT DOMAIN (aka.mydomain.com)
         - Free of charge
         - Native health check
@@ -1193,12 +1194,12 @@
         - Can be associated with Health Checks
     
     - Geoproximity
-        - images/img10
         - Route traffic to your resources based on the geographic location of users and resources
         - Ability to shift more traffic to resources based on the defines bias
         - To change the size of the geographic region, specify bias values:
             - To expand (1 to 99) - more traffic to the resource
             - To shrink (-1 to -99) - less traffic to the resource
+        ![Route 53 Geoproximity](images/img10.png)
 
         - Resources can be:
             - AWS resources (specify AWS region)
@@ -1293,7 +1294,7 @@
     - Preconfigured Docker
 
 - Web Server Tier vs Worker Tier
-    - images/img31
+    ![AWS Elastic Beanstalk](images/img31.png)
 
 ## AWS S3 
 - Amazon S3 is one of the main building blocks of AWS
@@ -1517,11 +1518,11 @@
         - Good first step to put together Lifecycle Rules
 
 - Requester Pays
-    - images/img32
     - In general, bucket owners pay for all Amazon S3 storage and data transfer costs associated with their bucket
     - With Requester Pays buckets, the requester instead of the bucket owner pays the cost of the request and the data download from the bucket
     - Helpful when you want to share large datasets with other accounts
     - The requester must be authenticated in AWS (cannot be anonymous)
+    ![S3 Requester Pays](images/img32.png)
 
 - Event Notifications
     - Events are things shuch as: S3: S3:ObjectCreated, S3:ObjectRemoved, S3:ObjectRestore, S3:Replication...
@@ -1533,10 +1534,10 @@
     - S3 event notifications typically deliver events in seconds but can sometimes take a minute or longer
 
     - Integration with Amazon EventBridge
-        - images/img33
         - Advanced filtering options with JSON rules (metadata, object size, name, ...)
         - Multiple Destinations - ex Step Functions, Kinesis Streams / Firehose ...
         - EventBridge Capabilities - Archive, Replay Events, Reliable delivery
+        ![Event notification](images/img33.png)
 
 - Baseline Performance
     - Amazon S3 automatically sacles to high request rates, latency 100-200 ms
@@ -1631,7 +1632,7 @@
 
     - Default Encryption vs. Bucke Policies
         - One way to "force encryption" is to use a bucket policy and refuse any API call to PUT and S3 object without encryption headers
-        - Policy example: images/img34
+        ![Policy example](images/img34.png)
         - Another way is to use the "default encryption" option in S3
         * Note: Bucket POlicies are evaluated before "default encryption"
 
@@ -1701,13 +1702,12 @@
         - can be freely placed and removed using the s3:PutObjectLegalHold IAM permission
     
 - Access Points
-    - images/img35
     - Each Access Point gets its own DNS and policy to limit who can access it
         - A specific IAM user / group
         - One policy per ACcess Point => Easier to manage than complex bucket policies
+    ![S3 access Points](images/img35.png)
 
     - S3 Object Lambda
-        - images/img36
         - Use AWS Lambda Function to change the object before it is retrieved by t he caller application
         - Only one S3 bucket is needed, on top of wich we create S3 Access Point and S3 Object Lambda ACcess Points
         
@@ -1738,10 +1738,10 @@
         - Any HTTP backend you want
 
     - CloudFront at a high level
-        - images/img36
+    ![CloudFront high level](images/img36.png)
 
     - S3 as an Origin
-        - images/img37
+    ![CloudFront S3 as Origin](images/img37.png)
 
     - CloudFront vs S3 Cross Region Replication
         - CloudFront:
@@ -1755,7 +1755,7 @@
             - Great for dynamic content that need to be available at low-latency in few regions
 
     - ALB or EC2 as an origin
-        - images/img38
+    ![CloudFront ALB or EC2 as Origin](images/img38.png)
 
 - Geo Restriction
     - You can restric who can access your distribution
@@ -1776,11 +1776,10 @@
             3. Price Class 100: only the least expensive regions
     
 - Cache Invalidations
-    - images/img39
     - In case you update the back-end origin, CloudFront doesn't know about it and will only get the refreshed content after the TTL has expired
     - However, you can force an entire or partial cache refresh (thus bypassing the TTL) by performing a CloudFront Invalidation
     - You can invalidate all files (*) or a special path (/images/*)
-
+    ![CloudFront cache invalidations](images/img39.png)
 
 
 ## AWS Global Accelerator
@@ -1817,7 +1816,6 @@
         - Good for HTTP use cases that required deterministic, fast regional failover
 
 
-
 ## AWS Snow Family
 - Highly-secure, portable devices to collect and process data at the edge, and migrate data into and out of AWS
 
@@ -1831,9 +1829,9 @@
     - Snowball edge
 
 - Data migration with AWS Snow Family
-    - images/img40
     - AWS Snow Family: offline devices to eprform data migrations
     - If it takes more than a week to transfer over the network, use Snowball devices
+    ![Snow Family Data migration](images/img40.png)
 
     - AWS Snowball Edge (for data transfers)
         - Physical ata transport solution: move TBs or PBs of data in or out of AWS
@@ -1906,7 +1904,6 @@
         - Launching and managing instances running on Snow Family Devices
         - Monitor device metrics (storage capacity, active instances on your device)
         - Launch compatible AWS services on your devices (ex: Amazon EC2 instances, AWS DataSync, Network File System NFS))
-
 
 
 ## AWS FSx
@@ -2007,32 +2004,32 @@
 
 - Types of storage Gateway:
     - S3 File Gateway
-        - images/img41
         - Configure S3 buckets are accessible using the NFS and SMB protocol
         - Most recently used data is cached in the file gateway
         - Supports S3 Standard, S3 Standard IA, S3 One Zone A, S3 Intelligent Tiering
         - Transition to S3 Glacier using a Lifecycle Policy
         - Bucket access using IAM role for each File Gateway
         - SMB Protocol has integration with Active Directory (AD) for user authentication
+        ![S3 Storage Gateway](images/img41.png)
     - FSx File Gateway
-        - images/img42
         - Native access to Amazon FSx for Windows File Server
         - Local cache for frequently accessed data
         - Windows native compatibility (SMB, NTFS, Active Directory...)
         - Useful for group file shares and home directories
+        ![FSx Storage Gateway](images/img42.png)
     - Volume Gateway
-        - images/img43
         - Block storage using iSCSI protocol backed by S3
         - Backed by EBS snapshots wich can help restore on-remises volumes
         - Cached volumes: low latency access to most recent data
         - Stored volumes: entire datased is on premise, scheduled backup to S3
+        ![Volume Gateway](images/img43.png)
     - Tape Gateway
-        - images/img44
         - Some companies have backup processes using physical tapes (!)
         - With Tape Gateway, companies use the same processes but, in the cloud
         - Virtual Tape Library (VTL) backed by Amazon S3 and Glacier
         - Back up data using existing tape-based processes (and iSCSI interface)
         - Works with leading backup software vendors
+        ![Tape Gateway](images/img44.png)
 
 - Hardware appliance
     - Using Storage Gateway means you need on-premises virtualization
@@ -2042,7 +2039,7 @@
     - Helpful for daily NFS backups in small data centers
 
 - Summerizing
-    - images/img45
+![Summerizing Volume Gateway](images/img45.png)
 
 
 ## AWS Transfer Family
@@ -2056,7 +2053,7 @@
 - Store and manage users credentials within the service
 - Integrate with existing authentication systems (Microsoft Active Directory, LDAP, Okta, Amazon Cognito, custom)
 - Usage: sharing files, public datasets, CRM, ERP, ...
-- images/img46
+![AWS Transfer Family](images/img46.png)
 
 
 ## AWS DataSync
@@ -2070,8 +2067,7 @@
 - Replication tasks can be scheduled hourly, daily, weekly
 - File permissions and metadata are preserved (NFS POSIX, SMB...)
 - One agend task can use 10 Gbps, can setup a bandwidth limit
-- images/img47
-
+![AWS DataSync](images/img47.png)
 
 
 ## Storage Comparison
@@ -2108,7 +2104,7 @@
 - Producing Messages
     - Produced to SQS using the SDK
     - The message is persisted in SQS until a consumer deletes it
-    - MEssage retention: default 4 days, up to 14 days
+    - Message retention: default 4 days, up to 14 days
 
     - SQS standard: unlimited throughput
 
@@ -2126,13 +2122,13 @@
     - We can scale consumers horizontally to improve throughput of processing
 
 - SQS with ASG
-    - images/img48
     - SQS as a buffer to database writes
-        - images/img50
+    ![SQS as a buffer](images/img48.png)
+    ![SQS with ASG](images/img50.png)
     - SQS to decouple between application tiers
 
 - SQS to decouple between application tiers
-    - images/img49
+![SQS to decouple application tiers](images/img49.png)
 
 - Security
     - Encryption:
@@ -2178,7 +2174,7 @@
 - Each subscriber to the topic will get all the messages (note: new feature to filter messages)
 - Up to 12,500,000 subscriptions per topic
 - 100,000 topics limit
-- images/img/51
+![AWS SNS](images/img51.png)
 
 - SNS integrates with a lot of AWS services
     - Many AWS services can send data directly to SNS for notifications
@@ -2207,21 +2203,22 @@
         - Useful for allowing other services (S3...) to write to an SQS queue
 
 - SNS + SQS: Fan Out
-    - images/img52
     - Push one in SNS, receive in all SQS queues that are subscribers
     - Fully decoupled, no data loss
     - SQS allows for: data persistence, delayed processing and retries of work
     - Ability to add more SQS subscribers over time
     - Make sure your SQS queue access policy allows for SNS to write
     - Cross-Region Delivery : works with SQS Queues in other regions
+    ![SQS + SNS](images/img52.png)
 
     - Application: S3 Events to multiple queues
         - For the same combination of: event type (e.g. object create) and prefix (e.g. images/) you can only have one S3 Event Rule
         - If you want to send the same S3 event to many SQS queues, use fan-out
-        - images/img53
+        ![S3 + multiple queues](images/img53.png)
 
     - Application: SNS to Amazon S3 through Kinesis Data Firehose
-        - SNS can send to Kinesis and therefore we can have the following solutions architecture: images/img54
+        - SNS can send to Kinesis and therefore we can have the following solutions architecture
+        ![SNS to Amazon S3 Kinesis Firehose](images/img54.png)
 
 - FIFO Topic
     - First In First Out
@@ -2234,7 +2231,7 @@
 - Message Filterign
     - JSON policy used to filter messages sent to SNS topic's subscriptions
     - If a subscription doen't have a filter policy, it receives every message
-    - images/img55
+    ![Message Filtering](images/img55.png)
 
 
 ## AWS Kinesis
@@ -2242,7 +2239,6 @@
 - Ingest real-time data such as: Application logs, Metrics, Website clickstreams, IoT telemtry data...
 
 - Kinesis Data Streams: capture, process, and store data streams
-    - images/img56
     - Retention between 1 to 365 days
     - Ability to reprocess (replay) data
     - Once data is inserted in Kinesis, it can't be deleted (immutability)
@@ -2251,6 +2247,7 @@
     - Consulmers:
         - Write your own: Kinesis Client Library (KCL), AWS SDK
         - Managed: AWS Lambda, Kinesis Data Firehose, Kinesis Data Analytics
+    ![AWS Kinesis](images/img56.png)
 
     - Capacity Modes
         - Provisioned mode:
@@ -2273,7 +2270,6 @@
         - Monitor API calls using CloudTrail
 
 - Kinesis Data Firehose: load data streams into AWS data stores
-    - images/img57
     - Fully Managed Service, no administration, automatic scaling, serveless
         - AWS: Redshift / Amazon S3 / ElasticSearch
         - 3rd party partiner: Splunk / MongoDB
@@ -2288,6 +2284,7 @@
     - Automatic scaling
     - No data Storage
     - Doesn't support replay capability
+    ![Kinesis Data Firehose](images/img57.png)
 
 - Kinesis Data Analytics: analyze data streams with SQL or Apache Flink
 
@@ -2347,7 +2344,7 @@
     - EC2 Launch Type: you must provision & maintain the infrastructure (the EC2 instances)
     - Each EC2 instances must run the ECS Agent to register in the ECS Cluster
     - AWS takes care of starting / stopping containers
-    - images/img58
+    ![EC2 Launch Type](images/img58.png)
 
 - Fargate Launch Type
     - Launch Docker containers on AWS
@@ -2356,10 +2353,9 @@
     - You just create task definitions
     - AWS just runs ECS Tasks for you based on the CPU / RAM you need
     - To scale, just increase the numbers of tasks, Simple - no more EC2 instances
-    - images/img59
+    ![Fargate Launch Type](images/img59.png)
 
 - IAM Roles for ECS
-    - images/img60
     - EC2 Instance Profile (EC2 Launch Type only):
         - Used by the ECS agent
         - Makes API calls to ECS service
@@ -2370,6 +2366,7 @@
         - Allows each task to have a specific role
         - Use different roles for the different ECS Services you run
         - Task Role is defined in the task definition
+    ![IAM Roles for ECS](images/img60.png)
 
 - Load Balancer Integrations
     - Application Load Balancer supported and works for most use cases
@@ -2381,7 +2378,7 @@
     - Works for both EC2 and Fargate launch types
     - Tasks running in any AZ will share the same data in the EFS file System
     - Fargate + EFS = Serverless
-    - images/img61
+    ![EFS](images/img61.png)
     
     - Use cases: persistent multi-AZ shared storage for your containers
     
@@ -2414,14 +2411,14 @@
             - Add EC2 Instances when you're missing capacity (CPU, RAM...)
     
     - ECS Scaling - Service CPU Usage Example
-        - images/img62
+    ![ECS Scaling](images/img62.png)
 
 - Solution Architecture
     - ECS tasks invoked by Event Bridge
-        - images/img63
+    ![ECS + EventBrigde](images/img63.png)
     
     - SQS Queue Example
-        - images/img64
+    ![ECS + SQS](images/img64.png)
 
 
 ## AWS ECR
@@ -2441,7 +2438,7 @@
 - EKS supports EC2 if you want to deploy worker nodes or Fargate to deploy serverless containers
 - Use case: if your company is already using Kubernetes on-premises or in another cloud, and wants to migrate to AWS using Kubernetes
 - Kubernetes is cloud-agnostic (can be used in any cloud - Azure, GCP ...)
-- images/img65
+![AWS EKS](images/img65.png)
 
 - Node Types
     - Managed Node Groups
@@ -2578,7 +2575,7 @@
             - Viewer Request: after CloudFront receives a rquest from a viewer
             - Viewer Response: before CloudFront forwards the response to the viewer
         - Native feature of CloudFront (manage code entirely within CloudFront)
-        - iamges/img66
+        ![CloudFront + lambda](images/img66.png)
 
     - Lambda@Edge
         - Lambda functions writte in NodeJS or Python
@@ -2589,10 +2586,10 @@
             - Origin Response - after CloudFront receives the response from the origin
             - Viewer Response - before CloudFront forwards the response to the viewer
         - Author your functions in one AWS Region (us-east-1), then CloudFront replicates to its locations
-        - images/img67
+        ![Lambda@EDGE](images/img67.png)
 
     - CloudFront Functions vs. Lambda@Edge
-        - images/img68
+        ![CloudFront + Lambda@Edge](images/img68.png)
 
         - Use cases:
             - CloudFront Functions
@@ -2614,11 +2611,11 @@
 - VPC
     - By default, your Lambda function is launched outside your own VPC (in an AWS-owned VPC)
     - Therefore, it cannot access resources in your VPC (RDS, ElastiCache, internal ELB...)
-    - images/img69
+    ![VPC](images/img69.png)
 
     - To access Lambda in VPC, you must define the VPC ID, the Subnets and the Security Groups
     - Lambda will create an ENI (elastic Network Interface) in your subnets
-    - images/img70
+    ![VPC](images/img70.png)
 
 - Lambda with RDS Proxy
     - If Lambda functions directly access your databse, they may open too many connections under high load
@@ -2627,7 +2624,7 @@
         - Improve availability by reducing by 66% the failover time and preserving connections
         - Improve security by enforcing IAM authentication and storing credentials in Secrets Manager
     - The Lambda functions must be deployed in your VPC, because RDS Proxy is never publicly accessible
-    - images/img71
+    ![Lambda with RDS](images/img71.png)
 
 
 ## AWS DynamoDB
@@ -4801,19 +4798,77 @@ Encryption in transit and at rest
 - Don't spend time writing the integrations and leverage APIs immediately
 
 
+## Well Architected Framework
+- General Guiding Principles
+    - Stop guessing your capacity needs
+    - Test Systems at Production scale
+    - Automate to make architectural experimentation easier
+    - Allow for evolutionary architectures
+        - Design based on changing requirements
+    - Drive architectures using data
+    - Improve through game days
+        - Simulate applications for flash sale days
+
+- 6 Pillars
+    1. Operational Excellence
+    2. Security
+    3. Reliability
+    4. Performance Efficiency
+    5. Cost Optimization
+    6. Sustainability
+
+    - They are not something to balance, or trade-offs, they are synergy
+
+- AWS Well-Architected Tool
+    - Free tool to review your architectures against the 6 pillars Well-Architected Framework and aopt architectural best practices
+    - How does it work?
+        - Select your workload and answer questions
+        - Review your ansers against the 6 pillars
+        - Obtain advice: get videos and documentations, generate a report, see the results in a dashboard
+
+
+## Trusted Advisor
+- No need to install anything - high level AWS account assessment
+- Analyze your AWS account and provides recommendation:
+    - Cost Optimization
+    - Performance
+    - Security
+    - Fault Tolerance
+    - Service Limits
+- Core Checks and recommendations - all customers
+- Can enable weekly email notification from the console
+- Full Trusted Advisor - Available for Business & Enterprise support plans
+    - Ability to set CloudWatch alarms when reaching limits
+    - Programmatic Access using AWS Support API
+
+- Checks Examples
+    - Cost Optimization:
+        - Low utilization EC2 instances, idle load balancers, under-utilized EBS volumes...
+        - Reserved instnaces & saving plans optization
+    - Performance:
+        - High utilization EC2 instances, CloudFront CDN optimizations
+        - EC2 to EBS throughput optimizations, Alias records recommendations
+    - Security:
+        - MFA enabled on Root Account, IAM key rotation, exposed Access Keys
+        - S3 Bucket Permissions for public access, security groups with unrestricted ports
+    - Fault Tolerance:
+        - EBS snapshots age, Availability Zone Balance
+        - ASG Multi-AZ, RDS Multi-AZ, ELB configutarion
+    - Service Limits
+
+
 ## Classic Solutions Architecture Examples
 - These solutions architectures are some example how to all the technologies below work togheter
 
 - Stateless Web App: WhatsIsTheTime.com
     - Stateless Web App: WhatIsTheTime.com
-        - images/img11
         - WhatIsTheTime.com allows people to know what time it is
         - We don't need a database
         - We want to start small and can accept downtime
         - We want to fully scale vertically and horizontally, no downtime
+        ![Stateless Web App](images/img11.png)
 
         - Scalling proccess:
-            - images/img11 to images/img18
             - Topics used on the scalling proccess:
                 - Public vs Private IP and EC2 instances
                 - Elastic IP vc Route 53 vs Load Balancers
@@ -4824,6 +4879,14 @@ Encryption in transit and at rest
                 - Security Group Rules
                 - Reservation of capacity for costing saving when possible
                 - We're considering 5 pillars for a well architected application: cost, performance, reliability, security, operational excellence
+            ![Stateless Scalling proccess](images/img11.png)
+            ![Stateless Scalling proccess](images/img12.png)
+            ![Stateless Scalling proccess](images/img13.png)
+            ![Stateless Scalling proccess](images/img14.png)
+            ![Stateless Scalling proccess](images/img15.png)
+            ![Stateless Scalling proccess](images/img16.png)
+            ![Stateless Scalling proccess](images/img17.png)
+            ![Stateless Scalling proccess](images/img18.png)
     
     - Stateful Web App: MyClothes.com
         - MyClothes.com allows people to buy clothes online
@@ -4834,7 +4897,6 @@ Encryption in transit and at rest
         - Users should have their details (address, etc) in a database
 
         - Scalling proccess, 3-tier architectures for web applications
-            - images/img19 to images/img25
             - EBLA sticky sessions
             - Web clients for storing cookies and making our web app stateless
             - ElastiCache
@@ -4846,6 +4908,13 @@ Encryption in transit and at rest
                 - Read replicas for scaling reads
                 - Multi AZ for disasters recovery
             - Tight Security with security groups referencing each other
+            ![Statefull web app scalling](images/img19.png)
+            ![Statefull web app scalling](images/img20.png)
+            ![Statefull web app scalling](images/img21.png)
+            ![Statefull web app scalling](images/img22.png)
+            ![Statefull web app scalling](images/img23.png)
+            ![Statefull web app scalling](images/img24.png)
+            ![Statefull web app scalling](images/img25.png)
 
     - Stateful Web App: MyWordPress.com
         - We area trying to create a fully scalable WordPress website
@@ -4853,10 +4922,14 @@ Encryption in transit and at rest
         - Our user data, and the blog content should be stored in a MySQL database
 
         - Scalling proccess:
-            - images/img26 to images/img30
             - Aurora Database to have easy Multi-AZ and Read-Replicas easier
             - Storing data in EBS (single instance application)
             - Vs Storing data in EFS (distributed application)
+            ![Statefull web app scalling 2](images/img26.png)
+            ![Statefull web app scalling 2](images/img27.png)
+            ![Statefull web app scalling 2](images/img28.png)
+            ![Statefull web app scalling 2](images/img29.png)
+            ![Statefull web app scalling 2](images/img30.png)
             
 - Instantiating Applications quickly
     - When launching a full stack (EC2, EBS, RDS), it can take time to:
@@ -5149,3 +5222,14 @@ BYOL - Bring Your Own License?
 
 - Public vc Private IP (IPv4)
     - The inernet Assigned Numbers Authority (IANA) established certain blocks of IPv4 addresses for the use of private (LAN) and public (Internet) addresses
+
+## Tips for the exame
+- Proceed by elimination
+    - Most questions are going to be scnario based
+    - For all the questions, rule out answers that you know for sure are wrong
+    - For the remaining answers, understand wich one makes the most sense
+    
+    - There are very few trick questions
+    - Don't over-think it
+    - If a solution seems feasible but highly complicated, it's probably wrong
+
