@@ -20,7 +20,7 @@
         - Resource: list of resources
         - Condition: condition for when this policy is in effect
 
-- Password policy -> in AWS we can set a password policy, increasing the security for the account. We can setupt a password policy
+- Password policy -> in AWS we can set a password policy, increasing the security for the account. We can setup a password policy
     - Minimum password length
     - Require specific character types
     - Allow all IAM user to change their own passwords
@@ -87,6 +87,7 @@
     - Advanced feature to use a managed policy to set the maximum permissions an IAM entity can get
 
     - Can be used in combination of AWS Organizations SCP
+    <br/>
     ![IAM Permission Boundaries](resources/img119.png)
 
     - Use cases:
