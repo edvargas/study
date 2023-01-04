@@ -87,7 +87,6 @@
     - Advanced feature to use a managed policy to set the maximum permissions an IAM entity can get
 
     - Can be used in combination of AWS Organizations SCP
-    <br/>
     ![IAM Permission Boundaries](resources/img119.png)
 
     - Use cases:
