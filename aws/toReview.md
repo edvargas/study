@@ -1,0 +1,12 @@
+- Authorization
+- Kinesis streams - receive the data an then replay to other applications/Lambda/Kinesis Fire Hose
+- DataSync - move um monte de dados
+- Redshift - banco de dados baseado em postgreSQL - online analytical processsing (analytics and data warehousing)
+- site-to-site vpn
+- accelerator -> usa rede interna de AWS pra acelerar os acessos nas aplicaçoes
+- appRunner - deploy de API
+- glue - preparar dados antes de persistir
+
+- vpc 
+    - vpn cloudhub connecta varias vpcs
+    - transit gateway centraliza a conexão em uma vpn

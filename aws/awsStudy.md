@@ -73,7 +73,7 @@
         ![IAM Roles vs Resource based policies](resources/img118.png)
     
     - When you assume a role (user, application or service), you give up your original permissions and take the permissions assigned to the role
-    - When using a resource-based policy, the principal doen't have to give up his permissions
+    - When using a resource-based policy, the principal doesn't have to give up his permissions
 
     - Suppoerted by: Amazon S3 buckets, SNS topics, SQS queues, etc...
 
@@ -129,7 +129,7 @@
             - Installing software
             - Downloading commons files from the internet
             - Anything you can think of
-        - The EC2 User Data SCript runds with the root user
+        - The EC2 User Data Script runds with the root user
 - The Instance's public IP may change, but the private IP is aways be the same
 
 - EC2 Instance Types:
@@ -168,7 +168,7 @@
     - Security groups rules can reference by IP or by security group
     - Security groups are acting as a "firewall" on EC2 instances, they regulate:
         - Access to Ports
-        - Authorised IP ranges - IPv4 or IPv6
+        - Authorized IP ranges - IPv4 or IPv6
         - Control of inbound network (from other to the instance)
         - Control of outbound network (from the instance to other)
     - Security group can be attached to multiple instances
@@ -258,7 +258,7 @@
         - May share hardware with other instances in same account
         - No control over instance placement (can move hardware after Stop / Start)
 
-        - I physical server itself, that's gives lower level visibility
+        - It's a physical server itself, that's gives lower level visibility
     - Capacity Reservations - reserve capacity in a specific AZ for any duration
         - Reserve On-Demand instances capacity in a specific AZ for any duration
         - We always have access to EC2 capacity when you need it
@@ -266,7 +266,7 @@
         - Combine with Regional Reserved Instances and Saving Plans to benefit from billing discounts
         - We're charged at On-Demand rate wheter you run instances or not
 
-        - Suitable for short-tem, uninterrupted workloads that needs to be in a specific AZ
+        - Suitable for short-term, uninterrupted workloads that needs to be in a specific AZ
 
     - Which purchasing option is right for me? (Using a resort as example)
         - On demand: coming and staying in resort whenever we like, we pay the full price
@@ -614,7 +614,7 @@
         - Health Checks support the TCP, HTTP and HTTPS Protocols
 
 - Gateway Load Balancer - GWLB
-    - Deploy, sacle ,and manage a fleet of 3rd party network virtual appliances in AWS
+    - Deploy, scale ,and manage a fleet of 3rd party network virtual appliances in AWS
     - Example: Firewalls, Intrusion Detection and PRevention Systems, Deep Packaet Inspection Systems, payload manipulation,...
 
     - Operates at Layer 3 (Network Layer) - IP Packats
@@ -776,7 +776,7 @@
     - Advice: Use a ready-to-use AMI to reduce configuration time in order to be serving request fasters an reduce the cooldown period
 
 
-## AWS RDS - Relational Database Service - 
+## AWS RDS - Relational Database Service
 - RDS stands for Relational Database Service
 - It's a managed DB service for DB use SQL as a query language
 - It allows you to create databases in the cloud that are managed by AWS
@@ -829,7 +829,7 @@
         - In AWS there's a network cost when data goes from one AZ to another
         - For RDS Read Replicas within the same region, you don't pay that fee
     
-- RDS Multi AZ (DIsaster Recovery)
+- RDS Multi AZ (Disaster Recovery)
     - SYNC replication
     - One DNS name - automatic app failover to standby
     - Increase availability
@@ -1150,68 +1150,60 @@
         - DNS does not route any traffic, it only responds to the DNS queries
     - Route 53 Supports the following Routing Policies
         - Simple
+            - Tipically, route traffic to a single resource
+            - Can specify multiple values in the same record
+            - If multiple values are returned, a random one is chosen by the client
+            - When Alias enabled, specify only one AWS resource
+            - Can't be associated with Health Checks
+
         - Weighted
-        - Failover
-        - Latency based
+            - Control the % of the requests that go to each specific resource
+            - Assign each record a relative weight:
+                - traffic (%) = (Weight for a specific record) / (Sum of all the weights for all records)
+                - Weights don't need to sum up to 100
+            - DNS records must have the same name and types
+            - Can be associated with Health Checks
+            - Use cases: load balancing between regions, testing new applications versions...
+            - Assign a weight of 0 to a record to stop sending traffic to a resource
+            - If all records have weight of 0, then all records will be returned equally
+
+        - Latency-based
+            - Redirect to the resource that has the least latency close to us
+            - Super helpful when latency for users is a priority
+            - Latency is based on traffic between users and AWS regions
+            - Germany users may be redirected to the US (if that's the lowest latency)
+            - Can be associated with HEalth Checks (has a failover capability)
+
+        - Failover (Active-Passive)
+            - Once one mandatory Instance is associate with Route 53, and we get an unhealthy statate, Route 53 automatically redirect to another Instance, this secondary instance also can be associated with a Health Check
+
         - Geolocation
-        - Multi-Value Answer
-        - Geoproximity (using Route 53 Traffic Flow feature)
-    
-    - Simple
-        - Tipically, route traffic to a single resource
-        - Can specify multiple values in the same record
-        - If multiple values are returned, a random one is chosen by the client
-        - When Alias enabled, specify only one AWS resource
-        - Can't be associated with Health Checks
+            - Different from Latency-based
+            - This routing is based on user location
+            - Specify location by Continen, Country or by US State (if ther's overlapping, most precise location selected)
+            - Should create a "Default" record (in case there's no match on location)
+            - Use Cases: website localization, restrict content distribution, load balancing, ...
+            - Can be associated with Health Checks
+        
+        - Geoproximity
+            - Route traffic to your resources based on the geographic location of users and resources
+            - Ability to shift more traffic to resources based on the defines bias
+            - To change the size of the geographic region, specify bias values:
+                - To expand (1 to 99) - more traffic to the resource
+                - To shrink (-1 to -99) - less traffic to the resource
+            ![Route 53 Geoproximity](resources/img10.png)
 
-    - Weighted
-        - Control the % of the requests that go to each specific resource
-        - Assign each record a relative weight:
-            - traffic (%) = (Weight for a specific record) / (Sum of all the weights for all records)
-            - Weights don't need to sum up to 100
-        - DNS records must have the same name and types
-        - Can be associated with Health Checks
-        - Use cases: load balancing between regions, testing new applications versions...
-        - Assign a weight of 0 to a record to stop sending traffic to a resource
-        - If all records have weight of 0, then all records will be returned equally
+            - Resources can be:
+                - AWS resources (specify AWS region)
+                - Non-AWS resources (speficy Latitude and Longitude)
+            - You must use Route 53 Traffic Flow (advanced) to use this feature
 
-    - Latency-based
-        - Redirect to the resource that has the least latency close to us
-        - Super helpful when latency for users is a priority
-        - Latency is based on traffic between users and AWS regions
-        - Germany users may be redirected to the US (if that's the lowest latency)
-        - Can be associated with HEalth Checks (has a failover capability)
-
-    - Failover (Active-Passive)
-        - Once one mandatory Instance is associate with Route 53, and we get an unhealthy statate, Route 53 automatically redirect to another Instance, this secondary instance also can be associated with a Health Check
-
-    - Geolocation
-        - Different from Latency-based
-        - This routing is based on user location
-        - Specify location by Continen, Country or by US State (if ther's overlapping, most precise location selected)
-        - Should create a "Default" record (in case there's no match on location)
-        - Use Cases: website localization, restrict content distribution, load balancing, ...
-        - Can be associated with Health Checks
-    
-    - Geoproximity
-        - Route traffic to your resources based on the geographic location of users and resources
-        - Ability to shift more traffic to resources based on the defines bias
-        - To change the size of the geographic region, specify bias values:
-            - To expand (1 to 99) - more traffic to the resource
-            - To shrink (-1 to -99) - less traffic to the resource
-        ![Route 53 Geoproximity](resources/img10.png)
-
-        - Resources can be:
-            - AWS resources (specify AWS region)
-            - Non-AWS resources (speficy Latitude and Longitude)
-        - You must use Route 53 Traffic Flow (advanced) to use this feature
-
-    - Multi-Value
-        - Use when routing traffic to multiple resources
-        - Route 53 return multiple values/resources
-        - Can be associated with Health Checks (return only values for healthy resources)
-        - Up to healthy records are returned for each Multi-Value query
-        - Multi-Value is not a substitute for having an ELB, the idea it's to be a client-side load balancing
+        - Multi-Value
+            - Use when routing traffic to multiple resources
+            - Route 53 return multiple values/resources
+            - Can be associated with Health Checks (return only values for healthy resources)
+            - Up to healthy records are returned for each Multi-Value query
+            - Multi-Value is not a substitute for having an ELB, the idea it's to be a client-side load balancing
 
 - Health Checks
     - HTTP Health Checks are only for public resources
@@ -1300,7 +1292,7 @@
 - Amazon S3 is one of the main building blocks of AWS
 - It's advertised as "infinitely scaling" storage
 
-- Many websites use Amazon S3 as a blackbone
+- Many websites use Amazon S3 as a backbone
 - Many AWS services use Amazon S3 as an integration as well
 
 - User Cases
@@ -1411,14 +1403,6 @@
         - If bucket 1 has replication into bucket 2, wich has replication into bucket 3, then objects created in bucket 1 are not replicated to bucket 3
 
 - Storage Classes
-    - Amazon S3 Standard - General Purpose
-    - Amazon S3 Standard-Infrequent Access (IA)
-    - Amazon S3 One Zone-Infrequent Access
-    - Amazon S3 Glacier Instant Retrieval
-    - Amazon S3 Glacier Flexible Retrieval
-    - Amazon S3 Glacier Deep Archive
-    - Amazon S3 Intelligent Tiering
-
     - Can move between classes manually or using S3 Lifecycle configurations
 
     - S3 Durability and Availability
@@ -1440,7 +1424,7 @@
         - For data that is less frequently accessed, but requires rapid access when needed
         - Lower cost thant S3 Standard
 
-        - Amazon S3 Standard-Infrquent Access (S3 Standard-IA)
+        - Amazon S3 Standard-Infrequent Access (S3 Standard-IA)
             - 99.9% Availability
             - Use cases: Dissaster Recovery, backups
 
@@ -1496,7 +1480,7 @@
         - Rules can be created for certain objects Tags (example:Department:Finance)
 
         - Scenario 1:
-            - Your application on EC2 creates images thimbnails after profile photos are uploaded to AS3. These thumbnails can be easily recreated, and only need to be kept for 60 days. The source images should be able to be immediately retrieved for these 60 days, and afterwards, the user can wait up to 6 hours. How would you design this?
+            - Your application on EC2 creates images thumbnails after profile photos are uploaded to AS3. These thumbnails can be easily recreated, and only need to be kept for 60 days. The source images should be able to be immediately retrieved for these 60 days, and afterwards, the user can wait up to 6 hours. How would you design this?
 
             - S3 source images can be on Standard, with a lifecycle configuration to transition them to Glacier after 60 days
             - S3 thumbnails can be on One-Zone IA, with a lifecycle configuration to expire them after 60 days.
@@ -1926,7 +1910,7 @@
     - Data is backed-up daily to S3
 
 - FSx for Lustre
-    - Lustre is a type of prallel distributed file system, for large-scale computing
+    - Lustre is a type of parallel distributed file system, for large-scale computing
     - The name Lustre is derived from "Linux" and "cluster"
 
     - Machine Learning, High Performance Computing (HPC)
@@ -2076,20 +2060,20 @@
 - EBS volumes: Network storage for one EC2 instance at a time
 - Instance Storage: Physical storage for your EC2 instance (high IOPS)
 - EFS: Network File System for Lynux instances, POSIX filesystem
-- FSx for Windwos: Network Fily System for Windows servers
+- FSx for Windows: Network Fily System for Windows servers
 - FSx for Lustre: High Performance Computing Linux file system
 - FSx For NetApp ONTAP: High OS Compability
 - FSx for OpenZFS: Managed ZFS file system
 - Storage Gateway: Bridge - S3 & FSx File Gateway, Volume Gateway (cache & stored), Tape Gateway
 - Transfer Family: FTP, FTPS, SFTP insterface on top of amazon S3 or Amazon EFS
 - DataSync: Schedule data sync from on-premises to AWS, or AWS to AWS
-- Snowcone / Snowball/ Snowmobile: to move large amount of data to the cloud, physically
-- Database: for specific worklaods, usually with indexing and querying
+- Snowcone / Snowball / Snowmobile: to move large amount of data to the cloud, physically
+- Database: for specific workloads, usually with indexing and querying
 
 
 ## AWS SQS
 - Standard Queue
-    - Oldes offering (over 10 yeasr old)
+    - Oldest offering (over 10 yeasr old)
     - Fully managed service, used to decouple applications
 
     - Attributes:
@@ -2244,7 +2228,7 @@
     - Once data is inserted in Kinesis, it can't be deleted (immutability)
     - Data tha shares the same partition goes to the same shard (ordering)
     - Producers: AWS SDK, Kinesis Producer Library (KPL), Kinesis Agent
-    - Consulmers:
+    - Consumers:
         - Write your own: Kinesis Client Library (KCL), AWS SDK
         - Managed: AWS Lambda, Kinesis Data Firehose, Kinesis Data Analytics
     ![AWS Kinesis](resources/img56.png)
@@ -2614,13 +2598,13 @@
     ![VPC](resources/img69.png)
 
     - To access Lambda in VPC, you must define the VPC ID, the Subnets and the Security Groups
-    - Lambda will create an ENI (elastic Network Interface) in your subnets
+    - Lambda will create an ENI (Elastic Network Interface) in your subnets
     ![VPC](resources/img70.png)
 
 - Lambda with RDS Proxy
     - If Lambda functions directly access your databse, they may open too many connections under high load
     - RDS Proxy
-        - Imrpove scalability by pooling and sharing DB connections
+        - Improve scalability by pooling and sharing DB connections
         - Improve availability by reducing by 66% the failover time and preserving connections
         - Improve security by enforcing IAM authentication and storing credentials in Secrets Manager
     - The Lambda functions must be deployed in your VPC, because RDS Proxy is never publicly accessible
@@ -2671,10 +2655,10 @@
     - Microseconds latency for cached data
     - Doesn't require application logic modification (compatible with existing DynamoDB APIs)
     - 5 minute TTL for cache (default)
-    ![DynamoDB Accelerator (DAX)](/resources/img72.png)
+    ![DynamoDB Accelerator (DAX)](resources/img72.png)
     
     - DAX vs. ElastiCache
-    ![DAX vs. ElastiCache](/resources/img73.png)
+    ![DAX vs. ElastiCache](resources/img73.png)
 
 - DynamoDB Stream Processing
     - Ordered stream of item-level modifications (create/update/delete) in a table
@@ -2685,7 +2669,7 @@
         - Implement cross-region replication
         - Invokke AWS Lambda on changes to your DynamoDB table
 
-    ![DynamoDB Streams vs. Kinesis Data Streams](/resources/img74.png)
+    ![DynamoDB Streams vs. Kinesis Data Streams](resources/img74.png)
 
 - DynamoDB Global Tables
     - Make a DynamoDB table accessible with low latency in multiple-regions
@@ -3387,7 +3371,7 @@ Encryption in transit and at rest
 
 
 ## AWS EventBridge (formerly CloudWatch Events)
-- SChedule: Cron jobs (scheduled scripts)
+- Schedule: Cron jobs (scheduled scripts)
 - Event Pattern: Event tules to react to a service doing something
 - Trigger Lambda functions, send SQS/SNS messages...
 
@@ -4207,9 +4191,9 @@ Encryption in transit and at rest
     - Subnets - tied to an AZ, we define a CIDR
     - Internet Gateway - at the VPC level, provide IPv4 & IPv6 Internet Access
     - Route Tables - must be edited to add routes from subnets to the IGW, VPC Peering Connections, VPC Endpoints, ...
-    - Bation Host - public EC2 instance to SSH into, that has SSH connectivity to EC2 instances in private subnets
+    - Bastion Host - public EC2 instance to SSH into, that has SSH connectivity to EC2 instances in private subnets
     - NAT Instances - gives Internet access to EC2 instances in private subnets. Old, must be setup in a public subnet, disable Source / Destination check flag
-    - NAT Gateway - managed by AWS, provides saclable Internet access to private EC2 instances, IPv4 only
+    - NAT Gateway - managed by AWS, provides scalable Internet access to private EC2 instances, IPv4 only
     - Private DNS + Route 53 - enable DNS Resolution + DNS Hostnames (VPC)
     - NACL - stateless, subnet rules for inbound and outbound, don't forget Ephemeral Ports
     - Security Groups - stateful, operate at the EC2 instance level
@@ -4217,7 +4201,7 @@ Encryption in transit and at rest
     - VPC Peering - connect two VPCs with non overlapping CIDR, non-transitive
     - VPC Endpoints - provide private access to AWS Services (S3, DynamoDB, CloudFormation, SSM) within a VPC
     - VPC Flow Logs - can be setup at the VPC / Subnet / ENI Level, for ACCEPT and REJECT traffic, helps identifying attacks, analyze using Athena or CloudWatch Logs Insights
-    - Site-toSite VPN - setup a Customer Gateway on DC, a Virtual Private Gateway on VPC, and site-to-site VPN over public Internet
+    - Site-to-Site VPN - setup a Customer Gateway on DC, a Virtual Private Gateway on VPC, and site-to-site VPN over public Internet
     - AWS VPN CloudHub - hub-and-spoke VPN model to connect your sites
     - Direct Connect - setup a Virtual Private Gateway on VPC, and establish a direct private connection to an AWS Direct Connect Location
     - Direct Connect Gateway - setup a Direct Connect to many VPCs in different AWS regions
