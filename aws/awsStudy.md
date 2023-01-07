@@ -3716,7 +3716,7 @@ Encryption in transit and at rest
 
 ## SSM Parameter Store (AWS Systems Manager)
 - Secure storage for configuration and secrets
-- Optional SEamless Encryption using KMS
+- Optional Seamless Encryption using KMS
 - Serverless, scalable, durable, easy SKD
 - Version tracking of configurations / secets
 - Security through IAM
@@ -3837,7 +3837,7 @@ Encryption in transit and at rest
 - DDoS: Distributed Denial of Service - many requests at the same time
 - AWS Shield Standard:
     - Free service that is activated for every AWS customer
-    - PRovides protection from attacks such as SYN/UDP Floods, Reflection attacks and other layer 3/layer 4 attacks
+    - Provides protection from attacks such as SYN/UDP Floods, Reflection attacks and other layer 3/layer 4 attacks
 - AWS Shield Advanced:
     - Optional DDoS mitigation service ($3,000 per month per organization)
     - Protect against more sophisticated attack on Amazon EC2, ELB, CloudFront, AWS Global Accelerator, and Route 53
@@ -4121,7 +4121,7 @@ Encryption in transit and at rest
 
 - AWS - VPN CloudHub
     - Provide secure communication between multiples sites, if you have multiple VPN connections
-    - Low-cost hub-and-spoe model for primary or secondary network connectivity between different localtions (VPN only)
+    - Low-cost hub-and-spoke model for primary or secondary network connectivity between different localtions (VPN only)
     - IT's a VPN connection so it goes over the public Internet
     - To set it up, connect multiple VPN connections on the same VGW, setup dynamic routing and configure route tables
     ![VPN CloudHub](resources/img165.png)
