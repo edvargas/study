@@ -1439,7 +1439,7 @@
 
         - Amazon S3 Glacier Instant Retrieval
             - Milisecond retrieval, great for data accessed once a quarter
-            - Minuum storage duration of 90 days
+            - Minimum storage duration of 90 days
         - Amazon S3 Glacier Flexible Retrieval (formerly Amazon S3 Glacier)
             - Expedited (1 to 5 minutes), Standard (3 to 5 hours), Bulk (5 to 12 hours) - free
             - Minimum storage duration of 90 days
@@ -1476,7 +1476,7 @@
             - Can be used to delete old versions of files (if versioning is enabled)
             - Can be used to delete incomplete Multi-Part uploads
 
-        - Rules can be created for a crtain prefix (example:s3://mybucket/mp3/*)
+        - Rules can be created for a certain prefix (example:s3://mybucket/mp3/*)
         - Rules can be created for certain objects Tags (example:Department:Finance)
 
         - Scenario 1:
@@ -1552,7 +1552,7 @@
     - Perform bulk operations on existing S3 objects with a single request, example:
         - Modify object metadata & roperties
         - Copy objects between S3 buckets
-        - Ecnrypt un-encrypted objects
+        - Encrypt un-encrypted objects
         - Modify ACLs, tags
         - Restore objects from S3 Glacier
         - Invoke Lambda function to perform custom action on each object
@@ -1561,7 +1561,7 @@
     - You can use S3 Inventory to get object list and use S3 Select to filter your objects
 
 - Object Encryption
-    - You can ecnrypt objects in S3 buckets using one of 4 methods
+    - You can encrypt objects in S3 buckets using one of 4 methods
 
     - Server-Side Encryption (SSE)
         - Server-Sider Encryption with Amazon S3-Managed Keys (SSE-S3)
@@ -2667,7 +2667,7 @@
         - Real-time usage analytics
         - Insert into derivative tables
         - Implement cross-region replication
-        - Invokke AWS Lambda on changes to your DynamoDB table
+        - Invoke AWS Lambda on changes to your DynamoDB table
 
     ![DynamoDB Streams vs. Kinesis Data Streams](resources/img74.png)
 
@@ -3956,7 +3956,7 @@ Encryption in transit and at rest
     - Must be created separately from a VPC
     - One VPC can only be attached to one IGW and vice versa
 
-    - INternet Gateways on their own do not allow Internet access.
+    - Internet Gateways on their own do not allow Internet access.
     - Route tables must also be edited
 
     ![VPC IGW](resources/img146.png)
@@ -3965,7 +3965,7 @@ Encryption in transit and at rest
     - We can use a Bastion Host to SSH into our privated EC2 instances
     - The bastion is in the public subnet wich is then connected to all other private subnets
     - Bastion Host security group must allow inbound from the internet on port 22 from restricted CIDR, for example the public CIDR of your corporation
-    - Security Group of the EC2 Instances must allow the SEcurity Group of the Bastion Host, or the private IP of the Bastion host
+    - Security Group of the EC2 Instances must allow the Security Group of the Bastion Host, or the private IP of the Bastion host
     ![VPC Bastion Hosts](resources/img147.png)
 
 - NAT Instance (outdated, but still at the exam)
@@ -4024,7 +4024,7 @@ Encryption in transit and at rest
     - The last rule is an asterisk (*) and denies a request in case of no rule match
     - AWS recommends adding rules by increment of 100
 - Newly created NACLs will deny everything
-- NACL are a great way of blocking a specific IP address at t he subnet level
+- NACL are a great way of blocking a specific IP address at the subnet level
 
 ![NACLs](resources/img153.png)
 
@@ -4083,7 +4083,7 @@ Encryption in transit and at rest
             - $ per hours + $ per GB of data processed
         
         - Gateway Endpoints
-            - Provisions a gateway and must be used as a target in a route table (does noet use security groups)
+            - Provisions a gateway and must be used as a target in a route table (does not use security groups)
             - Supports both S3 and DynamoDB
             - Free
 
@@ -4219,7 +4219,7 @@ Encryption in transit and at rest
 - Provides a dedicated private connection from a remote network to you VPC
 - Dedicated connection must be setup between your DC and AWS Direct Connect locations
 - You need to setup a Virtual Private Gateway on your VPC
-- ACcess public resources (S3) and private (EC2) on same connection
+- Access public resources (S3) and private (EC2) on same connection
 - Use Cases:
     - Increase bandwidth throughput - working with large data sets - lower cost
     - More consistent network experience - applications using real-time data feeds
@@ -4244,7 +4244,7 @@ Encryption in transit and at rest
 
 - Encryption
     - Data is transit is not encrypted but is private
-    - AWS Direct Connect + VPN rpovides an IPsec-encrypted private connection
+    - AWS Direct Connect + VPN provides an IPsec-encrypted private connection
     - Good for an extra level of security, but slightly more complex to ut in place
     ![DX Encryption](resources/img168.png)
 
